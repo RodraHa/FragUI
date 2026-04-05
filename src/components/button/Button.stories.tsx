@@ -12,100 +12,74 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary', 'secondary', 'outline'],
+      options: ['contained', 'outlined', 'text'],
       description: 'Visual style variant',
+    },
+    color: {
+      control: 'select',
+      options: ['ink', 'sea', 'brick', 'ochre', 'pine', 'grape'],
+      description: 'Color preset',
     },
     size: {
       control: 'select',
       options: ['sm', 'md', 'lg'],
       description: 'Button size',
     },
+    radius: {
+      control: 'select',
+      options: ['none', 'sm', 'md', 'lg'],
+      description: 'Border radius',
+    },
     disabled: {
       control: 'boolean',
       description: 'Disable the button',
     },
+    loading: {
+      control: 'boolean',
+      description: 'Loading state',
+    },
+    fullWidth: {
+      control: 'boolean',
+      description: 'Full width button',
+    },
+    effect: {
+      control: 'select',
+      options: ['none', 'ripple', 'scale'],
+      description: 'Click effect',
+    },
   },
   args: {
     onClick: fn(),
+    children: 'BUTTON',
   },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+export const Contained: Story = {
   args: {
-    variant: 'primary',
+    variant: 'contained',
+    color: 'ink',
     size: 'md',
-    children: 'Primary Button',
+    radius: 'none',
   },
 };
 
-export const Secondary: Story = {
+export const Outlined: Story = {
   args: {
-    variant: 'secondary',
+    variant: 'outlined',
+    color: 'ink',
     size: 'md',
-    children: 'Secondary Button',
+    radius: 'none',
   },
 };
 
-export const Outline: Story = {
+export const Text: Story = {
   args: {
-    variant: 'outline',
+    variant: 'text',
+    color: 'ink',
     size: 'md',
-    children: 'Outline Button',
+    radius: 'none',
   },
-};
-
-export const Small: Story = {
-  args: {
-    variant: 'primary',
-    size: 'sm',
-    children: 'Small Button',
-  },
-};
-
-export const Medium: Story = {
-  args: {
-    variant: 'primary',
-    size: 'md',
-    children: 'Medium Button',
-  },
-};
-
-export const Large: Story = {
-  args: {
-    variant: 'primary',
-    size: 'lg',
-    children: 'Large Button',
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    variant: 'primary',
-    size: 'md',
-    children: 'Disabled Button',
-    disabled: true,
-  },
-};
-
-export const AllVariants: Story = {
-  render: () => (
-    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-      <Button variant="primary">Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="outline">Outline</Button>
-    </div>
-  ),
-};
-
-export const AllSizes: Story = {
-  render: () => (
-    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-      <Button size="sm">Small</Button>
-      <Button size="md">Medium</Button>
-      <Button size="lg">Large</Button>
-    </div>
-  ),
 };
