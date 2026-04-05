@@ -97,7 +97,20 @@ Para visualizar y desarrollar componentes de forma aislada:
 
 ## Convenciones de Código
 
-Este proyecto sigue el **Airbnb React Style Guide** con las siguientes convenciones:
+Este proyecto sigue el **Airbnb React Style Guide** junto con las siguientes convenciones:
+
+### Nombres de Carpetas
+- Usa **kebab-case** para todos los nombres de carpetas
+- Ejemplos: `button`, `alert`, `design-tokens`, `shared-utils`
+
+### Nombres de Ramas
+- Usa **kebab-case** con el formato: `<tipo>/<descripción>`
+- Tipos: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
+- Ejemplos:
+  - `feat/button-component`
+  - `fix/modal-close-bug`
+  - `docs/update-readme`
+  - `refactor/theme-structure`
 
 ### Nombres de Archivos
 - Usa **PascalCase** para nombres de archivos de componentes
