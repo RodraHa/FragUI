@@ -303,7 +303,7 @@ describe('Button', () => {
         </Button>,
       );
       const btn = screen.getByRole('button');
-      expect(btn).toHaveAttribute('aria-live', 'polite');
+      expect(btn.querySelector('[aria-live="polite"]')).toBeInTheDocument();
     });
 
     it('hides startIcon and endIcon when loading', () => {

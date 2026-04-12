@@ -216,7 +216,7 @@ export function getButtonWrapperStyle(fullWidth: boolean): CSSProperties {
 
 export const tooltipStyle: CSSProperties = {
   position: 'absolute',
-  bottom: 'calc(100% + 8px)',
+  bottom: 'calc(100% + 14px)',
   left: '50%',
   transform: 'translateX(-50%)',
   backgroundColor: colors.neutral[500],

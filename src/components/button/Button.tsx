@@ -99,11 +99,23 @@ export const Button: React.FC<ButtonProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === 'Escape') {
       hideTooltip();
-      e.stopPropagation();
       onKeyDown?.(e);
       return;
     }
+    if (
+      (e.key === ' ' || e.key === 'Enter') &&
+      !isDisabled &&
+      effect !== 'none'
+    ) {
+      setIsPressActive(true);
+    }
     onKeyDown?.(e);
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if ((e.key === ' ' || e.key === 'Enter') && effect !== 'none') {
+      setIsPressActive(false);
+    }
   };
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -112,11 +124,11 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const handleMouseDown = () => {
-    if (!isDisabled && effect === 'press') setIsPressActive(true);
+    if (!isDisabled && effect !== 'none') setIsPressActive(true);
   };
 
   const handleMouseUp = () => {
-    if (effect === 'press') setIsPressActive(false);
+    if (effect !== 'none') setIsPressActive(false);
   };
 
   // Determine current state for styling
@@ -157,7 +169,6 @@ export const Button: React.FC<ButtonProps> = ({
           {...(loading ? { 'data-loading': 'true' } : {})}
           data-effect={effect}
           aria-describedby={tooltipVisible && tooltip ? tooltipId : undefined}
-          {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}
           style={{ ...computedStyles, transform: pressTransform, ...style }}
           className={className}
           onClick={handleClick}
@@ -167,6 +178,7 @@ export const Button: React.FC<ButtonProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
+          onKeyUp={handleKeyUp}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
         >
@@ -176,7 +188,9 @@ export const Button: React.FC<ButtonProps> = ({
             </span>
           )}
 
-          {buttonContent}
+          <span {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}>
+            {buttonContent}
+          </span>
 
           {loading && (
             <span
