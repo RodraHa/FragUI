@@ -64,7 +64,7 @@ const meta = {
     },
     effect: {
       control: 'select',
-      options: ['none', 'press'],
+      options: ['none', 'press', 'lift', 'glow'],
       description: 'Click effect',
     },
     tooltip: {

@@ -164,11 +164,14 @@ describe('Button', () => {
       expect(btn).toHaveAttribute('data-effect', 'press');
     });
 
-    it.each(['none', 'press'] as const)('applies effect="%s"', (effect) => {
-      const { container } = render(<Button effect={effect}>OK</Button>);
-      const btn = container.querySelector('button')!;
-      expect(btn).toHaveAttribute('data-effect', effect);
-    });
+    it.each(['none', 'press', 'lift', 'glow'] as const)(
+      'applies effect="%s"',
+      (effect) => {
+        const { container } = render(<Button effect={effect}>OK</Button>);
+        const btn = container.querySelector('button')!;
+        expect(btn).toHaveAttribute('data-effect', effect);
+      },
+    );
   });
 
   // ---------------------------------------------------------------------------

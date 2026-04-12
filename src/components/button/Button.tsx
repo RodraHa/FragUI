@@ -2,6 +2,7 @@ import React, { useId, useRef, useState } from 'react';
 import type { Color, Size } from '../../types';
 import {
   getButtonStyles,
+  getButtonEffectStyle,
   getButtonWrapperStyle,
   iconWrapperStyle,
   spinnerStyle,
@@ -19,7 +20,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   loading?: boolean;
   loadingText?: string;
   fullWidth?: boolean;
-  effect?: 'none' | 'press';
+  effect?: 'none' | 'press' | 'lift' | 'glow';
   tooltip?: string;
 }
 
@@ -144,8 +145,13 @@ export const Button: React.FC<ButtonProps> = ({
     buttonState,
   );
 
-  const pressTransform =
-    isPressActive && effect === 'press' ? 'scale(0.96)' : undefined;
+  const effectStyle = getButtonEffectStyle(
+    effect,
+    color,
+    isHovered,
+    isPressActive,
+    isDisabled,
+  );
 
   const buttonContent = loading && loadingText ? loadingText : children;
 
@@ -169,7 +175,7 @@ export const Button: React.FC<ButtonProps> = ({
           {...(loading ? { 'data-loading': 'true' } : {})}
           data-effect={effect}
           aria-describedby={tooltipVisible && tooltip ? tooltipId : undefined}
-          style={{ ...computedStyles, transform: pressTransform, ...style }}
+          style={{ ...computedStyles, ...effectStyle, ...style }}
           className={className}
           onClick={handleClick}
           onMouseEnter={handleMouseEnter}

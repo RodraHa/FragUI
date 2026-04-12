@@ -133,7 +133,7 @@ export function getButtonBaseStyle(
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? 0.6 : 1,
     transition:
-      'background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease',
+      'background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease, box-shadow 0.15s ease',
     position: 'relative',
     overflow: 'hidden',
     userSelect: 'none',
@@ -212,6 +212,40 @@ export function getButtonWrapperStyle(fullWidth: boolean): CSSProperties {
     display: fullWidth ? 'block' : 'inline-flex',
     width: fullWidth ? '100%' : undefined,
   };
+}
+
+type Effect = NonNullable<ButtonProps['effect']>;
+
+export function getButtonEffectStyle(
+  effect: Effect,
+  color: Color,
+  isHovered: boolean,
+  isPressActive: boolean,
+  isDisabled: boolean,
+): CSSProperties {
+  if (isDisabled || effect === 'none') return {};
+
+  switch (effect) {
+    case 'press':
+      return isPressActive ? { transform: 'scale(0.96)' } : {};
+    case 'lift': {
+      if (isPressActive && isHovered) return { transform: 'translateY(1px)' };
+      if (isPressActive) return { transform: 'scale(0.96)' };
+      if (isHovered) return { transform: 'translateY(-2px)' };
+      return {};
+    }
+    case 'glow': {
+      const { emphasis } = colorPresets[color];
+      return {
+        ...(isPressActive ? { transform: 'scale(0.96)' } : {}),
+        ...(isHovered && !isPressActive
+          ? { boxShadow: `0 0 0 4px ${emphasis}33` }
+          : {}),
+      };
+    }
+    default:
+      return {};
+  }
 }
 
 export const tooltipStyle: CSSProperties = {
