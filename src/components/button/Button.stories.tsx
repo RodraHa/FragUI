@@ -1,6 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 import { Button } from './Button';
+import {
+  BxsHome,
+  BxsArchive,
+  BxsCart,
+  BxsPlusCircle,
+} from '../../assets/icons';
+
+const iconMap: Record<string, React.ReactNode> = {
+  none: undefined,
+  home: <BxsHome />,
+  archive: <BxsArchive />,
+  cart: <BxsCart />,
+  plusCircle: <BxsPlusCircle />,
+};
+
+const iconOptions = Object.keys(iconMap);
 
 const meta = {
   title: 'Components/Button',
@@ -38,19 +54,42 @@ const meta = {
       control: 'boolean',
       description: 'Loading state',
     },
+    loadingText: {
+      control: 'text',
+      description: 'Text shown while loading',
+    },
     fullWidth: {
       control: 'boolean',
       description: 'Full width button',
     },
     effect: {
       control: 'select',
-      options: ['none', 'ripple', 'scale'],
+      options: ['none', 'press'],
       description: 'Click effect',
+    },
+    tooltip: {
+      control: 'text',
+      description: 'Tooltip text',
+    },
+    startIcon: {
+      control: 'select',
+      options: iconOptions,
+      mapping: iconMap,
+      description: 'Icon before text',
+    },
+    endIcon: {
+      control: 'select',
+      options: iconOptions,
+      mapping: iconMap,
+      description: 'Icon after text',
     },
   },
   args: {
     onClick: fn(),
     children: 'BUTTON',
+    startIcon: 'none',
+    endIcon: 'none',
+    effect: 'press',
   },
 } satisfies Meta<typeof Button>;
 

@@ -158,20 +158,17 @@ describe('Button', () => {
   // Props: effect
   // ---------------------------------------------------------------------------
   describe('effect', () => {
-    it('defaults to "ripple"', () => {
+    it('defaults to "press"', () => {
       const { container } = render(<Button>OK</Button>);
       const btn = container.querySelector('button')!;
-      expect(btn).toHaveAttribute('data-effect', 'ripple');
+      expect(btn).toHaveAttribute('data-effect', 'press');
     });
 
-    it.each(['none', 'ripple', 'scale'] as const)(
-      'applies effect="%s"',
-      (effect) => {
-        const { container } = render(<Button effect={effect}>OK</Button>);
-        const btn = container.querySelector('button')!;
-        expect(btn).toHaveAttribute('data-effect', effect);
-      },
-    );
+    it.each(['none', 'press'] as const)('applies effect="%s"', (effect) => {
+      const { container } = render(<Button effect={effect}>OK</Button>);
+      const btn = container.querySelector('button')!;
+      expect(btn).toHaveAttribute('data-effect', effect);
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -307,6 +304,37 @@ describe('Button', () => {
       );
       const btn = screen.getByRole('button');
       expect(btn).toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('hides startIcon and endIcon when loading', () => {
+      render(
+        <Button
+          loading
+          startIcon={<span data-testid="start">★</span>}
+          endIcon={<span data-testid="end">→</span>}
+        >
+          Save
+        </Button>,
+      );
+      expect(screen.queryByTestId('start')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('end')).not.toBeInTheDocument();
+    });
+
+    it('renders spinner after loadingText', () => {
+      const { container } = render(
+        <Button loading loadingText="Saving...">
+          Save
+        </Button>,
+      );
+      const btn = container.querySelector('button')!;
+      const spinner = btn.querySelector('[data-testid="button-spinner"]')!;
+      // The text node should come before the spinner in the DOM
+      const children = Array.from(btn.childNodes);
+      const textIndex = children.findIndex(
+        (n) => n.textContent === 'Saving...',
+      );
+      const spinnerIndex = children.indexOf(spinner);
+      expect(spinnerIndex).toBeGreaterThan(textIndex);
     });
   });
 

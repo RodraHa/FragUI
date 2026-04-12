@@ -1,6 +1,7 @@
 import React, { useId, useRef, useState } from 'react';
 import {
   getButtonStyles,
+  getButtonWrapperStyle,
   iconWrapperStyle,
   spinnerStyle,
   tooltipStyle,
@@ -17,15 +18,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   loading?: boolean;
   loadingText?: string;
   fullWidth?: boolean;
-  effect?: 'none' | 'ripple' | 'scale';
+  effect?: 'none' | 'press';
   tooltip?: string;
-}
-
-interface RippleItem {
-  id: number;
-  x: number;
-  y: number;
-  size: number;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -37,7 +31,7 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   loadingText,
   fullWidth = false,
-  effect = 'ripple',
+  effect = 'press',
   tooltip,
   startIcon,
   endIcon,
@@ -54,11 +48,10 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const tooltipId = useId();
   const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [isScaleActive, setIsScaleActive] = useState(false);
+  const [isPressActive, setIsPressActive] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [ripples, setRipples] = useState<RippleItem[]>([]);
-  const rippleCounter = useRef(0);
+  const isPointerFocusRef = useRef(false);
 
   const isDisabled = disabled || loading;
 
@@ -82,8 +75,16 @@ export const Button: React.FC<ButtonProps> = ({
     onMouseLeave?.(e);
   };
 
+  const handlePointerDown = () => {
+    // Mark that the upcoming focus event was triggered by pointer, not keyboard.
+    isPointerFocusRef.current = true;
+  };
+
   const handleFocus = (e: React.FocusEvent<HTMLButtonElement>) => {
-    setIsFocused(true);
+    if (!isPointerFocusRef.current) {
+      setIsFocused(true);
+    }
+    isPointerFocusRef.current = false;
     showTooltip();
     onFocus?.(e);
   };
@@ -106,29 +107,15 @@ export const Button: React.FC<ButtonProps> = ({
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (isDisabled) return;
-
-    if (effect === 'ripple') {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const rippleSize = Math.max(rect.width, rect.height) * 2;
-      const x = e.clientX - rect.left - rippleSize / 2;
-      const y = e.clientY - rect.top - rippleSize / 2;
-      const id = rippleCounter.current++;
-
-      setRipples((prev) => [...prev, { id, x, y, size: rippleSize }]);
-      setTimeout(() => {
-        setRipples((prev) => prev.filter((r) => r.id !== id));
-      }, 600);
-    }
-
     onClick?.(e);
   };
 
   const handleMouseDown = () => {
-    if (!isDisabled && effect === 'scale') setIsScaleActive(true);
+    if (!isDisabled && effect === 'press') setIsPressActive(true);
   };
 
   const handleMouseUp = () => {
-    if (effect === 'scale') setIsScaleActive(false);
+    if (effect === 'press') setIsPressActive(false);
   };
 
   // Determine current state for styling
@@ -144,93 +131,73 @@ export const Button: React.FC<ButtonProps> = ({
     buttonState,
   );
 
-  const scaleTransform =
-    isScaleActive && effect === 'scale' ? 'scale(0.96)' : undefined;
+  const pressTransform =
+    isPressActive && effect === 'press' ? 'scale(0.96)' : undefined;
 
   const buttonContent = loading && loadingText ? loadingText : children;
 
   return (
     <>
-      {/* Inject keyframe for ripple and spinner animations once */}
+      {/* Inject keyframe for spinner animation once */}
       <style>{`
         @keyframes fragui-spin {
           to { transform: rotate(360deg); }
         }
-        @keyframes fragui-ripple {
-          from { transform: scale(0); opacity: 0.35; }
-          to { transform: scale(1); opacity: 0; }
-        }
       `}</style>
-      <button
-        {...rest}
-        disabled={isDisabled}
-        data-variant={variant}
-        data-color={color}
-        data-size={size}
-        data-radius={radius}
-        {...(fullWidth ? { 'data-fullwidth': 'true' } : {})}
-        {...(loading ? { 'data-loading': 'true' } : {})}
-        data-effect={effect}
-        aria-describedby={tooltipVisible && tooltip ? tooltipId : undefined}
-        {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}
-        style={{ ...computedStyles, transform: scaleTransform, ...style }}
-        className={className}
-        onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-      >
-        {startIcon && (
-          <span style={iconWrapperStyle} aria-hidden="true">
-            {startIcon}
-          </span>
-        )}
+      <span style={getButtonWrapperStyle(fullWidth)}>
+        <button
+          {...rest}
+          disabled={isDisabled}
+          data-variant={variant}
+          data-color={color}
+          data-size={size}
+          data-radius={radius}
+          {...(fullWidth ? { 'data-fullwidth': 'true' } : {})}
+          {...(loading ? { 'data-loading': 'true' } : {})}
+          data-effect={effect}
+          aria-describedby={tooltipVisible && tooltip ? tooltipId : undefined}
+          {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}
+          style={{ ...computedStyles, transform: pressTransform, ...style }}
+          className={className}
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onPointerDown={handlePointerDown}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+        >
+          {!loading && startIcon && (
+            <span style={iconWrapperStyle} aria-hidden="true">
+              {startIcon}
+            </span>
+          )}
 
-        {loading && (
-          <span
-            data-testid="button-spinner"
-            style={spinnerStyle}
-            aria-hidden="true"
-          />
-        )}
+          {buttonContent}
 
-        {buttonContent}
-
-        {endIcon && (
-          <span style={iconWrapperStyle} aria-hidden="true">
-            {endIcon}
-          </span>
-        )}
-
-        {effect === 'ripple' &&
-          ripples.map((r) => (
+          {loading && (
             <span
-              key={r.id}
+              data-testid="button-spinner"
+              style={spinnerStyle}
               aria-hidden="true"
-              style={{
-                position: 'absolute',
-                left: r.x,
-                top: r.y,
-                width: r.size,
-                height: r.size,
-                borderRadius: '50%',
-                backgroundColor: 'currentColor',
-                animation: 'fragui-ripple 0.6s ease-out forwards',
-                pointerEvents: 'none',
-              }}
             />
-          ))}
+          )}
+
+          {!loading && endIcon && (
+            <span style={iconWrapperStyle} aria-hidden="true">
+              {endIcon}
+            </span>
+          )}
+        </button>
 
         {tooltipVisible && tooltip && (
           <span id={tooltipId} role="tooltip" style={tooltipStyle}>
             {tooltip}
           </span>
         )}
-      </button>
+      </span>
     </>
   );
 };

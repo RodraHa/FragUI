@@ -85,6 +85,7 @@ interface ResolvedStyle {
   text: string;
   border: string;
   outline?: string;
+  boxShadow?: string;
   textDecoration?: string;
 }
 
@@ -104,12 +105,11 @@ const variantRecipes: Record<Variant, VariantRecipe> = {
       background: p.light,
       text: p.contrast,
       border: p.light,
-      outline: `2px solid ${p.emphasis}`,
     }),
     focus: (p) => ({
-      background: p.light,
+      background: p.main,
       text: p.contrast,
-      border: p.light,
+      border: p.main,
       outline: `2px solid ${p.emphasis}`,
     }),
     disabled: (p) => ({
@@ -131,8 +131,8 @@ const variantRecipes: Record<Variant, VariantRecipe> = {
     }),
     focus: (p) => ({
       background: 'transparent',
-      text: p.light,
-      border: p.light,
+      text: p.main,
+      border: p.main,
       outline: `2px solid ${p.emphasis}`,
     }),
     disabled: (p) => ({
@@ -155,7 +155,7 @@ const variantRecipes: Record<Variant, VariantRecipe> = {
     }),
     focus: (p) => ({
       background: 'transparent',
-      text: p.light,
+      text: p.main,
       border: 'transparent',
       outline: `2px solid ${p.emphasis}`,
     }),
@@ -182,7 +182,7 @@ export function getButtonBaseStyle(
 ): CSSProperties {
   const tokens = buttonSize[size];
   return {
-    display: 'inline-flex',
+    display: fullWidth ? 'flex' : 'inline-flex',
     justifyContent: 'center',
     alignItems: 'center',
     gap: tokens.gap,
@@ -220,11 +220,16 @@ export function getVariantStyle(
     backgroundColor: resolved.background,
     color: resolved.text,
     border: `2px solid ${resolved.border}`,
+    outline: 'none',
   };
 
   if (resolved.outline) {
     css.outline = resolved.outline;
-    css.outlineOffset = '2px';
+    css.outlineOffset = '5px';
+  }
+
+  if (resolved.boxShadow) {
+    css.boxShadow = resolved.boxShadow;
   }
 
   if (resolved.textDecoration) {
@@ -266,16 +271,27 @@ export const iconWrapperStyle: CSSProperties = {
   flexShrink: 0,
 };
 
+export function getButtonWrapperStyle(fullWidth: boolean): CSSProperties {
+  return {
+    position: 'relative',
+    display: fullWidth ? 'block' : 'inline-flex',
+    width: fullWidth ? '100%' : undefined,
+  };
+}
+
 export const tooltipStyle: CSSProperties = {
   position: 'absolute',
-  bottom: 'calc(100% + 6px)',
+  bottom: 'calc(100% + 8px)',
   left: '50%',
   transform: 'translateX(-50%)',
   backgroundColor: colors.neutral[500],
   color: colors.white,
   fontSize: '0.75rem',
-  padding: '0.25rem 0.5rem',
-  borderRadius: '4px',
+  fontWeight: 700,
+  fontFamily: fontFamily.satoshi,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+  padding: '0.375rem 0.75rem',
   whiteSpace: 'nowrap',
   pointerEvents: 'none',
   zIndex: 9999,
