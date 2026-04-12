@@ -2,79 +2,14 @@ import type { CSSProperties } from 'react';
 import { colors } from '../../theme/tokens/colors';
 import { buttonBorderRadius, buttonSize } from '../../theme/tokens/button';
 import { fontFamily } from '../../theme/tokens/typography';
+import type { Color, Size } from '../../types';
+import { colorPresets } from '../../theme/presets';
+import type { ColorPreset } from '../../theme/presets';
 import type { ButtonProps } from './Button';
 
 type Variant = NonNullable<ButtonProps['variant']>;
-type Color = NonNullable<ButtonProps['color']>;
-type Size = NonNullable<ButtonProps['size']>;
 type Radius = NonNullable<ButtonProps['radius']>;
 type ButtonState = 'idle' | 'hover' | 'focus';
-
-/* ─── Color Preset ─────────────────────────────────────────────
- * Each preset defines semantic color slots.
- * Variants derive their styles from these slots — no per-variant
- * duplication needed when adding a new preset.
- * ────────────────────────────────────────────────────────────── */
-interface ColorPreset {
-  main: string; // primary surface / accent
-  light: string; // lighter shade (hover)
-  emphasis: string; // focus outline
-  contrast: string; // text on filled surface
-  muted: string; // disabled text / border
-  mutedBg: string; // disabled background
-}
-
-// TODO: Fill each preset with the correct color tokens
-const colorPresets: Record<Color, ColorPreset> = {
-  ink: {
-    main: colors.neutral[500], // e.g. colors.neutral[500]
-    light: colors.neutral[400], // e.g. colors.neutral[500]
-    emphasis: colors.neutral[500], // e.g. colors.neutral[300]
-    contrast: colors.white, // e.g. colors.white
-    muted: colors.white, // e.g. colors.neutral[200]
-    mutedBg: colors.neutral[200], // e.g. colors.neutral[100]
-  },
-  sea: {
-    main: colors.blue[500], // e.g. colors.blue[400]
-    light: colors.blue[400], // e.g. colors.blue[500]
-    emphasis: colors.blue[500], // e.g. colors.blue[300]
-    contrast: colors.white, // e.g. colors.white
-    muted: colors.white, // e.g. colors.blue[200]
-    mutedBg: colors.blue[100], // e.g. colors.blue[100]
-  },
-  brick: {
-    main: colors.red[500], // e.g. colors.red[400]
-    light: colors.red[400], // e.g. colors.red[500]
-    emphasis: colors.red[500], // e.g. colors.red[300]
-    contrast: colors.white, // e.g. colors.white
-    muted: colors.white, // e.g. colors.red[200]
-    mutedBg: colors.red[200], // e.g. colors.red[100]
-  },
-  ochre: {
-    main: colors.orange[700], // e.g. colors.orange[400]
-    light: colors.orange[600], // e.g. colors.orange[500]
-    emphasis: colors.orange[700], // e.g. colors.orange[300]
-    contrast: colors.white, // e.g. colors.neutral[500] (dark text)
-    muted: colors.white, // e.g. colors.orange[200]
-    mutedBg: colors.orange[200], // e.g. colors.orange[100]
-  },
-  pine: {
-    main: colors.green[500], // e.g. colors.green[400]
-    light: colors.green[400], // e.g. colors.green[500]
-    emphasis: colors.green[500], // e.g. colors.green[300]
-    contrast: colors.white, // e.g. colors.white
-    muted: colors.white, // e.g. colors.green[200]
-    mutedBg: colors.green[100], // e.g. colors.green[100]
-  },
-  grape: {
-    main: colors.purple[500], // e.g. colors.purple[400]
-    light: colors.purple[400], // e.g. colors.purple[500]
-    emphasis: colors.purple[500], // e.g. colors.purple[300]
-    contrast: colors.white, // e.g. colors.white
-    muted: colors.white, // e.g. colors.purple[200]
-    mutedBg: colors.purple[100], // e.g. colors.purple[100]
-  },
-};
 
 /* ─── Variant Recipes ──────────────────────────────────────────
  * Each variant defines how it maps preset slots → CSS per state.

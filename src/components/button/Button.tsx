@@ -1,4 +1,5 @@
 import React, { useId, useRef, useState } from 'react';
+import type { Color, Size } from '../../types';
 import {
   getButtonStyles,
   getButtonWrapperStyle,
@@ -9,10 +10,10 @@ import {
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'contained' | 'outlined' | 'text';
-  color?: 'ink' | 'sea' | 'brick' | 'ochre' | 'pine' | 'grape';
+  color?: Color;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  size?: Size;
   radius?: 'none' | 'sm' | 'md' | 'lg';
   disabled?: boolean;
   loading?: boolean;
