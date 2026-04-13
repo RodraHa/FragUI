@@ -3,18 +3,21 @@ import { fontSize, fontWeight } from './typography';
 export const buttonSize = {
   sm: {
     padding: '0.75rem 1.5rem',
+    paddingIconOnly: '0.75rem',
     gap: '0.625rem',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.black,
   },
   md: {
     padding: '1rem 2rem',
+    paddingIconOnly: '1rem',
     gap: '0.625rem',
     fontSize: fontSize.md,
     fontWeight: fontWeight.black,
   },
   lg: {
     padding: '1.5rem 3rem',
+    paddingIconOnly: '1.5rem',
     gap: '0.625rem',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.black,

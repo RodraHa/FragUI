@@ -56,6 +56,14 @@ export const Button: React.FC<ButtonProps> = ({
   const isPointerFocusRef = useRef(false);
 
   const isDisabled = disabled || loading;
+  // Children is considered absent when null / undefined / false (React no-ops).
+  // A string "" is treated the same way since it renders nothing visible.
+  const hasChildren =
+    children !== null &&
+    children !== undefined &&
+    children !== false &&
+    children !== '';
+  const isIconOnly = !hasChildren && !!(startIcon || endIcon);
 
   const showTooltip = () => {
     if (tooltip) setTooltipVisible(true);
@@ -143,6 +151,7 @@ export const Button: React.FC<ButtonProps> = ({
     fullWidth,
     isDisabled,
     buttonState,
+    isIconOnly,
   );
 
   const effectStyle = getButtonEffectStyle(
@@ -194,9 +203,13 @@ export const Button: React.FC<ButtonProps> = ({
             </span>
           )}
 
-          <span {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}>
-            {buttonContent}
-          </span>
+          {(hasChildren || (loading && loadingText)) && (
+            <span
+              {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}
+            >
+              {buttonContent}
+            </span>
+          )}
 
           {loading && (
             <span

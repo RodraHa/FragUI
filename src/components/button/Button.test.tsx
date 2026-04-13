@@ -135,6 +135,63 @@ describe('Button', () => {
       expect(within(btn).getByTestId('start')).toBeInTheDocument();
       expect(within(btn).getByTestId('end')).toBeInTheDocument();
     });
+
+    it('icon wrappers have aria-hidden="true"', () => {
+      const { container } = render(
+        <Button startIcon={<span>★</span>} endIcon={<span>→</span>}>
+          Label
+        </Button>,
+      );
+      const btn = container.querySelector('button')!;
+      const hiddenWrappers = btn.querySelectorAll('[aria-hidden="true"]');
+      expect(hiddenWrappers.length).toBe(2);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Icon-only buttons
+  // ---------------------------------------------------------------------------
+  describe('icon-only', () => {
+    it('uses square padding (symmetric) when only startIcon is provided', () => {
+      const { container } = render(
+        <Button startIcon={<span>★</span>} aria-label="Star" />,
+      );
+      const btn = container.querySelector('button')!;
+      // md default: paddingIconOnly = '1rem', vs normal '1rem 2rem'
+      expect(btn).toHaveStyle({ padding: '1rem' });
+    });
+
+    it('uses square padding when only endIcon is provided', () => {
+      const { container } = render(
+        <Button endIcon={<span>→</span>} aria-label="Next" />,
+      );
+      const btn = container.querySelector('button')!;
+      expect(btn).toHaveStyle({ padding: '1rem' });
+    });
+
+    it('does not render an empty text span when icon-only', () => {
+      const { container } = render(
+        <Button startIcon={<span>★</span>} aria-label="Star" />,
+      );
+      const btn = container.querySelector('button')!;
+      // Only the icon wrapper should be a child — no phantom text span
+      expect(btn.children.length).toBe(1);
+    });
+
+    it('uses normal asymmetric padding when icon and children are both present', () => {
+      const { container } = render(
+        <Button startIcon={<span>★</span>}>Label</Button>,
+      );
+      const btn = container.querySelector('button')!;
+      expect(btn).toHaveStyle({ padding: '1rem 2rem' });
+    });
+
+    it('is accessible via aria-label', () => {
+      render(<Button startIcon={<span>★</span>} aria-label="Favourite" />);
+      expect(
+        screen.getByRole('button', { name: 'Favourite' }),
+      ).toBeInTheDocument();
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -388,11 +445,6 @@ describe('Button', () => {
   // Accesibilidad: ARIA
   // ---------------------------------------------------------------------------
   describe('ARIA attributes', () => {
-    it('supports aria-label for icon-only buttons', () => {
-      render(<Button aria-label="Close" startIcon={<span>✕</span>} />);
-      expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
-    });
-
     it('associates tooltip via aria-describedby when tooltip provides helpful info', async () => {
       const user = userEvent.setup();
       render(<Button tooltip="Saves the current document">Save</Button>);

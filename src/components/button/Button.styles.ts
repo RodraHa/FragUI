@@ -114,6 +114,7 @@ export function getButtonBaseStyle(
   radius: Radius,
   fullWidth: boolean,
   isDisabled: boolean,
+  isIconOnly: boolean = false,
 ): CSSProperties {
   const tokens = buttonSize[size];
   return {
@@ -121,7 +122,7 @@ export function getButtonBaseStyle(
     justifyContent: 'center',
     alignItems: 'center',
     gap: tokens.gap,
-    padding: tokens.padding,
+    padding: isIconOnly ? tokens.paddingIconOnly : tokens.padding,
     fontSize: tokens.fontSize,
     fontWeight: tokens.fontWeight,
     fontStyle: 'normal',
@@ -182,9 +183,10 @@ export function getButtonStyles(
   fullWidth: boolean,
   isDisabled: boolean,
   state: ButtonState = 'idle',
+  isIconOnly: boolean = false,
 ): CSSProperties {
   return {
-    ...getButtonBaseStyle(size, radius, fullWidth, isDisabled),
+    ...getButtonBaseStyle(size, radius, fullWidth, isDisabled, isIconOnly),
     ...getVariantStyle(variant, color, state, isDisabled),
   };
 }
