@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { Button } from './Button';
+import { buttonSize } from '../../theme/tokens/button';
 
 describe('Button', () => {
   // ---------------------------------------------------------------------------
@@ -157,8 +158,8 @@ describe('Button', () => {
         <Button startIcon={<span>★</span>} aria-label="Star" />,
       );
       const btn = container.querySelector('button')!;
-      // md default: paddingIconOnly = '1rem', vs normal '1rem 2rem'
-      expect(btn).toHaveStyle({ padding: '1rem' });
+      // md default: paddingIconOnly, vs normal asymmetric padding
+      expect(btn).toHaveStyle({ padding: buttonSize.md.paddingIconOnly });
     });
 
     it('uses square padding when only endIcon is provided', () => {
@@ -166,7 +167,7 @@ describe('Button', () => {
         <Button endIcon={<span>→</span>} aria-label="Next" />,
       );
       const btn = container.querySelector('button')!;
-      expect(btn).toHaveStyle({ padding: '1rem' });
+      expect(btn).toHaveStyle({ padding: buttonSize.md.paddingIconOnly });
     });
 
     it('does not render an empty text span when icon-only', () => {
@@ -183,7 +184,7 @@ describe('Button', () => {
         <Button startIcon={<span>★</span>}>Label</Button>,
       );
       const btn = container.querySelector('button')!;
-      expect(btn).toHaveStyle({ padding: '1rem 2rem' });
+      expect(btn).toHaveStyle({ padding: buttonSize.md.padding });
     });
 
     it('is accessible via aria-label', () => {
