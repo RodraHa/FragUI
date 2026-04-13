@@ -22,8 +22,22 @@ const meta = {
   title: 'Components/Button',
   component: Button,
   parameters: {
-    layout: 'centered',
+    layout: 'padded',
   },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          minHeight: '200px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   tags: ['autodocs'],
   argTypes: {
     variant: {
