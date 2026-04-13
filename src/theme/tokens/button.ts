@@ -2,20 +2,26 @@ import { fontSize, fontWeight } from './typography';
 
 export const buttonSize = {
   sm: {
-    padding: '0.75rem 1.5rem',
-    gap: '0.625rem',
+    padding:
+      'clamp(0.5rem, 0.3rem + 0.6vw, 0.75rem) clamp(1rem, 0.6rem + 1.2vw, 1.5rem)',
+    paddingIconOnly: 'clamp(0.5rem, 0.3rem + 0.6vw, 0.75rem)',
+    gap: 'clamp(0.375rem, 0.25rem + 0.4vw, 0.625rem)',
     fontSize: fontSize.sm,
     fontWeight: fontWeight.black,
   },
   md: {
-    padding: '1rem 2rem',
-    gap: '0.625rem',
+    padding:
+      'clamp(0.625rem, 0.35rem + 0.85vw, 1rem) clamp(1.25rem, 0.7rem + 1.7vw, 2rem)',
+    paddingIconOnly: 'clamp(0.625rem, 0.35rem + 0.85vw, 1rem)',
+    gap: 'clamp(0.375rem, 0.25rem + 0.4vw, 0.625rem)',
     fontSize: fontSize.md,
     fontWeight: fontWeight.black,
   },
   lg: {
-    padding: '1.5rem 3rem',
-    gap: '0.625rem',
+    padding:
+      'clamp(0.75rem, 0.35rem + 1.25vw, 1.5rem) clamp(1.5rem, 0.6rem + 2.75vw, 3rem)',
+    paddingIconOnly: 'clamp(0.75rem, 0.35rem + 1.25vw, 1.5rem)',
+    gap: 'clamp(0.375rem, 0.25rem + 0.4vw, 0.625rem)',
     fontSize: fontSize.lg,
     fontWeight: fontWeight.black,
   },
@@ -31,19 +37,19 @@ export const buttonSize = {
  */
 export const buttonBorderRadius = {
   sm: {
-    sm: '0.75rem',
-    md: '1rem',
-    lg: '1.5rem',
+    sm: 'clamp(0.5rem, 0.3rem + 0.6vw, 0.75rem)',
+    md: 'clamp(0.625rem, 0.35rem + 0.85vw, 1rem)',
+    lg: 'clamp(1rem, 0.6rem + 1.2vw, 1.5rem)',
   },
   md: {
-    sm: '1rem',
-    md: '1.5rem',
-    lg: '2rem',
+    sm: 'clamp(0.625rem, 0.35rem + 0.85vw, 1rem)',
+    md: 'clamp(1rem, 0.6rem + 1.2vw, 1.5rem)',
+    lg: 'clamp(1.25rem, 0.65rem + 1.7vw, 2rem)',
   },
   lg: {
-    sm: '1.5rem',
-    md: '2rem',
-    lg: '3rem',
+    sm: 'clamp(1rem, 0.6rem + 1.2vw, 1.5rem)',
+    md: 'clamp(1.25rem, 0.65rem + 1.7vw, 2rem)',
+    lg: 'clamp(1.5rem, 0.6rem + 2.75vw, 3rem)',
   },
 } as const;
 
