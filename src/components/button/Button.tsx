@@ -1,5 +1,6 @@
 import React, { useId, useRef, useState } from 'react';
 import type { Color, Size } from '../../types';
+import { useKeyframes } from '../../hooks';
 import {
   getButtonStyles,
   getButtonEffectStyle,
@@ -48,6 +49,11 @@ export const Button: React.FC<ButtonProps> = ({
   className,
   ...rest
 }) => {
+  useKeyframes(
+    'fragui-button-keyframes',
+    `@keyframes fragui-spin { to { transform: rotate(360deg); } }`,
+  );
+
   const tooltipId = useId();
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [isPressActive, setIsPressActive] = useState(false);
@@ -165,73 +171,63 @@ export const Button: React.FC<ButtonProps> = ({
   const buttonContent = loading && loadingText ? loadingText : children;
 
   return (
-    <>
-      {/* Inject keyframe for spinner animation once */}
-      <style>{`
-        @keyframes fragui-spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-      <span style={getButtonWrapperStyle(fullWidth)}>
-        <button
-          {...rest}
-          disabled={isDisabled}
-          data-variant={variant}
-          data-color={color}
-          data-size={size}
-          data-radius={radius}
-          {...(fullWidth ? { 'data-fullwidth': 'true' } : {})}
-          {...(loading ? { 'data-loading': 'true' } : {})}
-          data-effect={effect}
-          aria-describedby={tooltipVisible && tooltip ? tooltipId : undefined}
-          style={{ ...computedStyles, ...effectStyle, ...style }}
-          className={className}
-          onClick={handleClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onPointerDown={handlePointerDown}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          onKeyUp={handleKeyUp}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-        >
-          {!loading && startIcon && (
-            <span style={iconWrapperStyle} aria-hidden="true">
-              {startIcon}
-            </span>
-          )}
-
-          {(hasChildren || (loading && loadingText)) && (
-            <span
-              {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}
-            >
-              {buttonContent}
-            </span>
-          )}
-
-          {loading && (
-            <span
-              data-testid="button-spinner"
-              style={spinnerStyle}
-              aria-hidden="true"
-            />
-          )}
-
-          {!loading && endIcon && (
-            <span style={iconWrapperStyle} aria-hidden="true">
-              {endIcon}
-            </span>
-          )}
-        </button>
-
-        {tooltipVisible && tooltip && (
-          <span id={tooltipId} role="tooltip" style={tooltipStyle}>
-            {tooltip}
+    <span style={getButtonWrapperStyle(fullWidth)}>
+      <button
+        {...rest}
+        disabled={isDisabled}
+        data-variant={variant}
+        data-color={color}
+        data-size={size}
+        data-radius={radius}
+        {...(fullWidth ? { 'data-fullwidth': 'true' } : {})}
+        {...(loading ? { 'data-loading': 'true' } : {})}
+        data-effect={effect}
+        aria-describedby={tooltipVisible && tooltip ? tooltipId : undefined}
+        style={{ ...computedStyles, ...effectStyle, ...style }}
+        className={className}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onPointerDown={handlePointerDown}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyUp}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+      >
+        {!loading && startIcon && (
+          <span style={iconWrapperStyle} aria-hidden="true">
+            {startIcon}
           </span>
         )}
-      </span>
-    </>
+
+        {(hasChildren || (loading && loadingText)) && (
+          <span {...(loading && loadingText ? { 'aria-live': 'polite' } : {})}>
+            {buttonContent}
+          </span>
+        )}
+
+        {loading && (
+          <span
+            data-testid="button-spinner"
+            style={spinnerStyle}
+            aria-hidden="true"
+          />
+        )}
+
+        {!loading && endIcon && (
+          <span style={iconWrapperStyle} aria-hidden="true">
+            {endIcon}
+          </span>
+        )}
+      </button>
+
+      {tooltipVisible && tooltip && (
+        <span id={tooltipId} role="tooltip" style={tooltipStyle}>
+          {tooltip}
+        </span>
+      )}
+    </span>
   );
 };
