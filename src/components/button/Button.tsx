@@ -1,5 +1,6 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import type { Color, Size } from '../../types';
+import { useKeyframes } from '../../hooks';
 import {
   getButtonStyles,
   getButtonEffectStyle,
@@ -48,14 +49,10 @@ export const Button: React.FC<ButtonProps> = ({
   className,
   ...rest
 }) => {
-  useEffect(() => {
-    const id = 'fragui-button-keyframes';
-    if (document.getElementById(id)) return;
-    const styleEl = document.createElement('style');
-    styleEl.id = id;
-    styleEl.textContent = `@keyframes fragui-spin { to { transform: rotate(360deg); } }`;
-    document.head.appendChild(styleEl);
-  }, []);
+  useKeyframes(
+    'fragui-button-keyframes',
+    `@keyframes fragui-spin { to { transform: rotate(360deg); } }`,
+  );
 
   const tooltipId = useId();
   const [tooltipVisible, setTooltipVisible] = useState(false);
