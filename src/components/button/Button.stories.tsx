@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { fn } from 'storybook/test';
 import { Button } from './Button';
 import {
   BxsHome,
@@ -165,7 +164,6 @@ const meta = {
     },
   },
   args: {
-    onClick: fn(),
     children: 'BUTTON',
     startIcon: 'none',
     endIcon: 'none',
