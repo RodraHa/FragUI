@@ -155,7 +155,9 @@ export function getVariantStyle(
   const css: CSSProperties = {
     backgroundColor: resolved.background,
     color: resolved.text,
-    border: `2px solid ${resolved.border}`,
+    borderWidth: 2,
+    borderStyle: 'solid',
+    borderColor: resolved.border,
     outline: 'none',
   };
 

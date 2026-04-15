@@ -3,3 +3,11 @@ export type { ButtonProps } from './components/button';
 
 export { Badge } from './components/badge';
 export type { BadgeProps } from './components/badge';
+
+export { Alert } from './components/alert';
+export type {
+  AlertProps,
+  AlertStatus,
+  AlertVariant,
+  AlertAnimation,
+} from './components/alert';
