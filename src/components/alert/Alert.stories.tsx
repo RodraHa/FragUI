@@ -1,6 +1,30 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Alert } from './Alert';
 import { fontFamily } from '../../theme/tokens/typography';
+import {
+  BxsHome,
+  BxsArchive,
+  BxsCart,
+  BxsPlusCircle,
+  BxsCheckSquare,
+  BxsInfoSquare,
+  BxsXSquare,
+  WarningFilled,
+} from '../../assets/icons';
+
+const iconMap: Record<string, React.ReactNode> = {
+  none: undefined,
+  home: <BxsHome />,
+  archive: <BxsArchive />,
+  cart: <BxsCart />,
+  plusCircle: <BxsPlusCircle />,
+  checkSquare: <BxsCheckSquare />,
+  infoSquare: <BxsInfoSquare />,
+  xSquare: <BxsXSquare />,
+  warning: <WarningFilled />,
+};
+
+const iconOptions = Object.keys(iconMap);
 
 const meta = {
   title: 'Components/Alert',
@@ -96,8 +120,18 @@ const meta = {
         'Alert aplica el estilo correcto segun variant y status.',
       table: { category: 'Contenido' },
     },
-    icon: { table: { disable: true } },
+    icon: {
+      control: 'select',
+      options: iconOptions,
+      mapping: iconMap,
+      description:
+        'Icono personalizado que reemplaza el icono por defecto del status cuando showIcon esta activo.',
+      table: { category: 'Contenido', defaultValue: { summary: 'none' } },
+    },
     onClose: { table: { disable: true } },
+  },
+  args: {
+    icon: 'none',
   },
 } satisfies Meta<typeof Alert>;
 
