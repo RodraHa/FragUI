@@ -220,8 +220,8 @@ export function getAlertCloseSlotStyle(
   if (variant === 'banner') {
     return {
       position: 'absolute',
-      top: '0.75rem',
-      right: '0.75rem',
+      top: alertSpacing.sidePadding,
+      right: alertSpacing.sidePadding,
     };
   }
   return {

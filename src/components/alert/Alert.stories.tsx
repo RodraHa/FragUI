@@ -45,7 +45,7 @@ const meta = {
     (Story) => (
       <div
         style={{
-          minWidth: '480px',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
