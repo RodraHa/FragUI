@@ -142,68 +142,50 @@ export const Alert: React.FC<AlertProps> = ({
     ...style,
   };
 
-  const renderIcon = () =>
-    resolvedIcon && (
-      <span
-        data-component="alert-icon"
-        aria-hidden="true"
-        style={getAlertIconSlotStyle(variant, color)}
+  const isBanner = variant === 'banner';
+
+  const iconNode = resolvedIcon && (
+    <span
+      data-component="alert-icon"
+      aria-hidden="true"
+      style={getAlertIconSlotStyle(variant, color)}
+    >
+      {resolvedIcon}
+    </span>
+  );
+
+  const titleNode = title && <strong style={alertTitleStyle}>{title}</strong>;
+
+  const actionNode =
+    action &&
+    (() => {
+      const cfg = getAlertActionButtonConfig(variant, color);
+      return (
+        <div data-component="alert-action" style={alertActionSlotStyle}>
+          <Button
+            variant={cfg.variant}
+            color={cfg.color}
+            size="sm"
+            style={cfg.style}
+            onClick={action.onClick}
+          >
+            {action.label}
+          </Button>
+        </div>
+      );
+    })();
+
+  const closeNode = dismissible && (
+    <span style={getAlertCloseSlotStyle(variant, color)}>
+      <button
+        type="button"
+        aria-label="Cerrar alerta"
+        onClick={handleClose}
+        style={getAlertCloseButtonStyle(variant, color)}
       >
-        {resolvedIcon}
-      </span>
-    );
-
-  const renderAction = () => {
-    if (!action) return null;
-    const cfg = getAlertActionButtonConfig(variant, color);
-    return (
-      <div data-component="alert-action" style={alertActionSlotStyle}>
-        <Button
-          variant={cfg.variant}
-          color={cfg.color}
-          size="sm"
-          style={cfg.style}
-          onClick={action.onClick}
-        >
-          {action.label}
-        </Button>
-      </div>
-    );
-  };
-
-  const renderCloseButton = () =>
-    dismissible && (
-      <span style={getAlertCloseSlotStyle(variant, color)}>
-        <button
-          type="button"
-          aria-label="Cerrar alerta"
-          onClick={handleClose}
-          style={getAlertCloseButtonStyle(variant, color)}
-        >
-          <CloseBold size={alertSpacing.closeIconSize} aria-hidden="true" />
-        </button>
-      </span>
-    );
-
-  const renderBody = () => (
-    <div style={getAlertBodyStyle(variant, color)}>
-      {variant === 'banner' ? (
-        <>
-          <div style={alertBannerHeaderStyle}>
-            {renderIcon()}
-            {title && <strong style={alertTitleStyle}>{title}</strong>}
-          </div>
-          {description && <p style={alertDescriptionStyle}>{description}</p>}
-          {action && renderAction()}
-        </>
-      ) : (
-        <>
-          {title && <strong style={alertTitleStyle}>{title}</strong>}
-          {description && <p style={alertDescriptionStyle}>{description}</p>}
-          {action && renderAction()}
-        </>
-      )}
-    </div>
+        <CloseBold size={alertSpacing.closeIconSize} aria-hidden="true" />
+      </button>
+    </span>
   );
 
   return (
@@ -219,18 +201,20 @@ export const Alert: React.FC<AlertProps> = ({
       className={className}
       style={containerStyle}
     >
-      {variant === 'banner' ? (
-        <>
-          {renderBody()}
-          {renderCloseButton()}
-        </>
-      ) : (
-        <>
-          {resolvedIcon && renderIcon()}
-          {renderBody()}
-          {dismissible && renderCloseButton()}
-        </>
-      )}
+      {!isBanner && iconNode}
+      <div style={getAlertBodyStyle(variant)}>
+        {isBanner ? (
+          <div style={alertBannerHeaderStyle}>
+            {iconNode}
+            {titleNode}
+          </div>
+        ) : (
+          titleNode
+        )}
+        {description && <p style={alertDescriptionStyle}>{description}</p>}
+        {actionNode}
+      </div>
+      {closeNode}
     </div>
   );
 };

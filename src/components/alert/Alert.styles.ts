@@ -29,52 +29,30 @@ interface ResolvedSurface {
   border: string;
   divider: string;
   backgroundImage?: string;
-  iconSlotBackground?: string;
-  iconSlotText?: string;
-  bodyBackgroundImage?: string;
 }
 
-type VariantRecipe = (color: Color) => ResolvedSurface;
-
-const variantRecipes: Record<AlertVariant, VariantRecipe> = {
-  filled: (color) => {
-    const p = colorPresets[color];
+function resolveSurface(variant: AlertVariant, color: Color): ResolvedSurface {
+  const p = colorPresets[color];
+  // Solid-surface variants share the same recipe.
+  if (variant === 'filled' || variant === 'banner') {
     return {
       background: p.main,
       text: p.contrast,
       border: p.main,
       divider: p.contrast,
     };
-  },
-  outlined: (color) => {
-    const p = colorPresets[color];
-    return {
-      background: '#FFFFFF',
-      text: p.main,
-      border: p.main,
-      divider: p.main,
-    };
-  },
-  stripe: (color) => {
-    const p = colorPresets[color];
-    return {
-      background: '#FFFFFF',
-      text: p.main,
-      border: p.main,
-      divider: p.main,
-      backgroundImage: `repeating-linear-gradient(45deg, ${hexToRgba(p.main, 0.18)} 0 1px, transparent 1px 10px)`,
-    };
-  },
-  banner: (color) => {
-    const p = colorPresets[color];
-    return {
-      background: p.main,
-      text: p.contrast,
-      border: p.main,
-      divider: p.contrast,
-    };
-  },
-};
+  }
+  const base: ResolvedSurface = {
+    background: '#FFFFFF',
+    text: p.main,
+    border: p.main,
+    divider: p.main,
+  };
+  if (variant === 'stripe') {
+    base.backgroundImage = `repeating-linear-gradient(45deg, ${hexToRgba(p.main, 0.18)} 0 1px, transparent 1px 10px)`;
+  }
+  return base;
+}
 
 /* ─── Container style ──────────────────────────────────────── */
 
@@ -82,7 +60,7 @@ export function getAlertContainerStyle(
   variant: AlertVariant,
   color: Color,
 ): CSSProperties {
-  const resolved = variantRecipes[variant](color);
+  const resolved = resolveSurface(variant, color);
 
   const base: CSSProperties = {
     display: 'flex',
@@ -119,7 +97,7 @@ export function getAlertIconSlotStyle(
   variant: AlertVariant,
   color: Color,
 ): CSSProperties {
-  const resolved = variantRecipes[variant](color);
+  const resolved = resolveSurface(variant, color);
   if (variant === 'banner') {
     return {
       display: 'inline-flex',
@@ -135,19 +113,14 @@ export function getAlertIconSlotStyle(
     justifyContent: 'center',
     padding: alertSpacing.sidePadding,
     borderRight: `${alertSpacing.borderWidth}px solid ${resolved.divider}`,
-    backgroundColor: resolved.iconSlotBackground,
-    color: resolved.iconSlotText ?? resolved.text,
+    color: resolved.text,
     flexShrink: 0,
   };
 }
 
 /* ─── Body (title + description + action) ──────────────────── */
 
-export function getAlertBodyStyle(
-  variant: AlertVariant,
-  color: Color,
-): CSSProperties {
-  const resolved = variantRecipes[variant](color);
+export function getAlertBodyStyle(variant: AlertVariant): CSSProperties {
   if (variant === 'banner') {
     return {
       display: 'flex',
@@ -167,7 +140,6 @@ export function getAlertBodyStyle(
     padding: alertSpacing.containerPadding,
     flex: 1,
     minWidth: 0,
-    backgroundImage: resolved.bodyBackgroundImage,
   };
 }
 
@@ -244,7 +216,7 @@ export function getAlertCloseSlotStyle(
   variant: AlertVariant,
   color: Color,
 ): CSSProperties {
-  const resolved = variantRecipes[variant](color);
+  const resolved = resolveSurface(variant, color);
   if (variant === 'banner') {
     return {
       position: 'absolute',
@@ -267,7 +239,7 @@ export function getAlertCloseButtonStyle(
   variant: AlertVariant,
   color: Color,
 ): CSSProperties {
-  const resolved = variantRecipes[variant](color);
+  const resolved = resolveSurface(variant, color);
   return {
     display: 'inline-flex',
     alignItems: 'center',
