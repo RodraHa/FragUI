@@ -1,6 +1,19 @@
 import { colors } from './tokens/colors';
 import type { Color } from '../types';
 
+/* ─── Status → Color mapping ───────────────────────────────────
+ * Semantic statuses resolve to the palette colors used across
+ * status-aware components (alerts, toasts, inline validations…).
+ * ────────────────────────────────────────────────────────────── */
+export type Status = 'success' | 'info' | 'warning' | 'error';
+
+export const statusToColor: Record<Status, Color> = {
+  success: 'pine',
+  info: 'ink',
+  warning: 'ochre',
+  error: 'brick',
+};
+
 /* ─── Color Preset ─────────────────────────────────────────────
  * Each preset maps a palette entry to semantic style slots.
  * Components derive their states from these slots so that
