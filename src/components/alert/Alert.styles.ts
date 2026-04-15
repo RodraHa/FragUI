@@ -54,11 +54,30 @@ function resolveSurface(variant: AlertVariant, color: Color): ResolvedSurface {
   return base;
 }
 
+/* ─── Elevated shadow (offset rectangle behind alert) ──────────
+ * Rectangle color matches text color. If text is white, we add a
+ * 1px black outline so it remains visible on light backgrounds.
+ * ────────────────────────────────────────────────────────────── */
+
+function isWhite(hex: string): boolean {
+  const v = hex.trim().toUpperCase().replace('#', '');
+  return v === 'FFF' || v === 'FFFFFF';
+}
+
+function getElevatedBoxShadow(textColor: string): string {
+  const o = alertSpacing.elevatedOffset;
+  if (isWhite(textColor)) {
+    return `${o}px ${o}px 0 0 #FFFFFF, ${o}px ${o}px 0 1px #000000`;
+  }
+  return `${o}px ${o}px 0 0 ${textColor}`;
+}
+
 /* ─── Container style ──────────────────────────────────────── */
 
 export function getAlertContainerStyle(
   variant: AlertVariant,
   color: Color,
+  elevated: boolean,
 ): CSSProperties {
   const resolved = resolveSurface(variant, color);
 
@@ -86,6 +105,10 @@ export function getAlertContainerStyle(
     base.alignItems = 'center';
     base.textAlign = 'center';
     base.padding = alertSpacing.containerPadding;
+  }
+
+  if (elevated) {
+    base.boxShadow = getElevatedBoxShadow(resolved.text);
   }
 
   return base;
