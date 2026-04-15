@@ -112,6 +112,12 @@ const meta = {
       description: 'Animacion de entrada al montar la alerta.',
       table: { category: 'Apariencia', defaultValue: { summary: 'none' } },
     },
+    elevated: {
+      control: 'boolean',
+      description:
+        'Determina si se muestra una sombra sólida de bloque detrás del contenedor para resaltar la jerarquía y profundidad visual.',
+      table: { category: 'Apariencia', defaultValue: { summary: 'false' } },
+    },
     action: {
       control: 'object',
       description:
@@ -283,5 +289,21 @@ export const SlideAnimation: Story = {
     title: 'Slide in',
     description: 'This alert slides in on mount.',
     animation: 'slide',
+  },
+};
+
+// ─── Elevated ─────────────────────────────────────────────────
+
+export const Elevated: Story = {
+  args: {
+    variant: 'outlined',
+    status: 'info',
+    showIcon: true,
+    dismissible: true,
+    elevated: true,
+    title: 'New update available',
+    description:
+      "We've added some cool new features to your dashboard. Take a look!",
+    action: { label: 'Learn more' },
   },
 };

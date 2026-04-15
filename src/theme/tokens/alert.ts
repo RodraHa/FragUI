@@ -23,6 +23,7 @@ export const alertSpacing = {
   closeIconSize: 20,
   sidePadding: 'clamp(0.625rem, 0.35rem + 1vw, 1rem)',
   borderWidth: 1,
+  elevatedOffset: 6,
 } as const;
 
 // Re-exported for completeness

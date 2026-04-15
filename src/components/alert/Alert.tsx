@@ -48,6 +48,7 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
   autoFocus?: boolean;
   animation?: AlertAnimation;
+  elevated?: boolean;
 }
 
 const defaultIconByStatus: Record<AlertStatus, React.ReactNode> = {
@@ -70,6 +71,7 @@ export const Alert: React.FC<AlertProps> = ({
   onClose,
   autoFocus = false,
   animation = 'none',
+  elevated = false,
   style,
   className,
   ...rest
@@ -137,7 +139,7 @@ export const Alert: React.FC<AlertProps> = ({
   const resolvedIcon = showIcon ? (icon ?? defaultIconByStatus[status]) : null;
 
   const containerStyle: React.CSSProperties = {
-    ...getAlertContainerStyle(variant, color),
+    ...getAlertContainerStyle(variant, color, elevated),
     ...getAlertAnimationStyle(animation),
     ...style,
   };
