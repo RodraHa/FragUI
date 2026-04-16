@@ -35,6 +35,10 @@ const meta = {
   ],
   tags: ['autodocs'],
   argTypes: {
+    children: {
+      table: { disable: true },
+      control: false,
+    },
     variant: {
       control: 'select',
       options: ['solid', 'subtle'],
