@@ -36,7 +36,7 @@ export function getBadgeStyles(
     userSelect: 'none',
     textTransform: 'uppercase',
     backgroundColor: isSolid ? preset.main : preset.mutedBg,
-    color: isSolid ? preset.contrast : preset.main,
+    color: isSolid ? preset.mutedBg : preset.main,
     ...(isDot && {
       width: tokens.dotSize,
       height: tokens.dotSize,

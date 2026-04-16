@@ -59,7 +59,7 @@ export const colorPresets: Record<Color, ColorPreset> = {
     emphasis: colors.orange[700],
     contrast: colors.white,
     muted: colors.white,
-    mutedBg: colors.orange[200],
+    mutedBg: colors.orange[100],
   },
   pine: {
     main: colors.green[500],
