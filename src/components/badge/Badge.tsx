@@ -24,6 +24,27 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children?: React.ReactNode;
 }
 
+type BadgeMode = NonNullable<BadgeProps['mode']>;
+
+function resolveContent(
+  mode: BadgeMode,
+  value: number,
+  maxValue: number,
+  showZero: boolean,
+  label: string | undefined,
+): { visible: boolean; content: React.ReactNode } {
+  if (mode === 'dot') return { visible: true, content: null };
+  if (mode === 'numeric') {
+    if (value === 0 && !showZero) return { visible: false, content: null };
+    return {
+      visible: true,
+      content: value > maxValue ? `${maxValue}+` : `${value}`,
+    };
+  }
+  if (!label) return { visible: false, content: null };
+  return { visible: true, content: label };
+}
+
 export const Badge: React.FC<BadgeProps> = ({
   variant = 'solid',
   mode = 'label',
@@ -43,57 +64,16 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   useKeyframes('fragui-badge-keyframes', pulseKeyframes, pulse);
 
-  // ─── Resolve content & visibility ────────────────────────────
-  let content: React.ReactNode = null;
-  let isVisible = true;
+  const { visible, content } = resolveContent(
+    mode,
+    value,
+    maxValue,
+    showZero,
+    label,
+  );
+  const hasAnchor = Boolean(children);
 
-  switch (mode) {
-    case 'numeric': {
-      if (value === 0 && !showZero) {
-        isVisible = false;
-      } else {
-        content = value > maxValue ? `${maxValue}+` : `${value}`;
-      }
-      break;
-    }
-    case 'dot': {
-      content = null;
-      break;
-    }
-    case 'label':
-    default: {
-      if (!label) {
-        isVisible = false;
-      } else {
-        content = label;
-      }
-      break;
-    }
-  }
-
-  // ─── ARIA attributes ─────────────────────────────────────────
-  const ariaProps: Record<string, string> = {};
-
-  if (mode === 'dot') {
-    ariaProps['aria-hidden'] = 'true';
-  } else if (mode === 'label') {
-    ariaProps['role'] = 'status';
-  }
-
-  // ─── Styles ──────────────────────────────────────────────────
-  const badgeStyles = getBadgeStyles(variant, color, size, mode);
-  const pulseStyle = pulse ? getBadgePulseStyle() : {};
-  const anchorStyle = children ? getBadgeAnchorStyle(anchor, offset) : {};
-
-  const combinedStyle: React.CSSProperties = {
-    ...badgeStyles,
-    ...pulseStyle,
-    ...anchorStyle,
-    ...style,
-  };
-
-  // ─── Badge element ───────────────────────────────────────────
-  const badgeElement = isVisible ? (
+  const badgeElement = visible ? (
     <span
       {...rest}
       data-component="badge"
@@ -101,20 +81,23 @@ export const Badge: React.FC<BadgeProps> = ({
       data-mode={mode}
       data-color={color}
       data-size={size}
-      {...(children ? { 'data-anchor': anchor } : {})}
-      {...(pulse ? { 'data-pulse': 'true' } : {})}
-      {...ariaProps}
-      style={combinedStyle}
+      data-anchor={hasAnchor ? anchor : undefined}
+      data-pulse={pulse ? 'true' : undefined}
+      aria-hidden={mode === 'dot' ? true : undefined}
+      role={mode === 'label' ? 'status' : undefined}
+      style={{
+        ...getBadgeStyles(variant, color, size, mode),
+        ...(pulse && getBadgePulseStyle()),
+        ...(hasAnchor && getBadgeAnchorStyle(anchor, offset)),
+        ...style,
+      }}
       className={className}
     >
       {content}
     </span>
   ) : null;
 
-  // ─── Render ──────────────────────────────────────────────────
-  if (!children) {
-    return badgeElement;
-  }
+  if (!hasAnchor) return badgeElement;
 
   return (
     <span data-component="badge-wrapper" style={getBadgeWrapperStyle()}>
