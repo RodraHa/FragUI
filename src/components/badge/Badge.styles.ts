@@ -6,79 +6,8 @@ import type { Color, Size } from '../../types';
 import type { BadgeProps } from './Badge';
 
 type Variant = NonNullable<BadgeProps['variant']>;
+type Mode = NonNullable<BadgeProps['mode']>;
 type Anchor = NonNullable<BadgeProps['anchor']>;
-
-/* ─── Variant Recipes ──────────────────────────────────────── */
-
-interface ResolvedStyle {
-  background: string;
-  text: string;
-}
-
-const variantRecipes: Record<Variant, (color: Color) => ResolvedStyle> = {
-  solid: (color) => {
-    const preset = colorPresets[color];
-    return {
-      background: preset.main,
-      text: preset.contrast,
-    };
-  },
-  subtle: (color) => {
-    const preset = colorPresets[color];
-    return {
-      background: preset.mutedBg,
-      text: preset.main,
-    };
-  },
-};
-
-/* ─── Base Badge Style ─────────────────────────────────────── */
-
-export function getBadgeBaseStyle(size: Size): CSSProperties {
-  const tokens = badgeSize[size];
-  return {
-    display: 'inline-flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 'clamp(0.375rem, 0.25rem + 0.4vw, 0.625rem)',
-    padding: tokens.padding,
-    fontSize: tokens.fontSize,
-    fontWeight: tokens.fontWeight,
-    fontStyle: 'normal',
-    lineHeight: 'normal',
-    fontFamily: fontFamily.satoshi,
-    boxSizing: 'border-box',
-    whiteSpace: 'nowrap',
-    userSelect: 'none',
-    textTransform: 'uppercase',
-  };
-}
-
-/* ─── Variant Style ────────────────────────────────────────── */
-
-export function getBadgeVariantStyle(
-  variant: Variant,
-  color: Color,
-): CSSProperties {
-  const resolved = variantRecipes[variant](color);
-  return {
-    backgroundColor: resolved.background,
-    color: resolved.text,
-  };
-}
-
-/* ─── Dot Style ────────────────────────────────────────────── */
-
-export function getBadgeDotStyle(size: Size): CSSProperties {
-  const tokens = badgeSize[size];
-  return {
-    width: tokens.dotSize,
-    height: tokens.dotSize,
-    padding: 0,
-    fontSize: 0,
-    lineHeight: 0,
-  };
-}
 
 /* ─── Combined Badge Style ─────────────────────────────────── */
 
@@ -86,16 +15,32 @@ export function getBadgeStyles(
   variant: Variant,
   color: Color,
   size: Size,
-  mode: 'numeric' | 'dot' | 'label',
+  mode: Mode,
 ): CSSProperties {
-  const base = getBadgeBaseStyle(size);
-  const variantStyle = getBadgeVariantStyle(variant, color);
-  const dotOverrides = mode === 'dot' ? getBadgeDotStyle(size) : {};
+  const tokens = badgeSize[size];
+  const preset = colorPresets[color];
+  const isSolid = variant === 'solid';
+  const isDot = mode === 'dot';
 
   return {
-    ...base,
-    ...variantStyle,
-    ...dotOverrides,
+    display: 'inline-flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: isDot ? 0 : tokens.padding,
+    fontSize: isDot ? 0 : tokens.fontSize,
+    fontWeight: tokens.fontWeight,
+    lineHeight: isDot ? 0 : 'normal',
+    fontFamily: fontFamily.satoshi,
+    boxSizing: 'border-box',
+    whiteSpace: 'nowrap',
+    userSelect: 'none',
+    textTransform: 'uppercase',
+    backgroundColor: isSolid ? preset.main : preset.mutedBg,
+    color: isSolid ? preset.contrast : preset.main,
+    ...(isDot && {
+      width: tokens.dotSize,
+      height: tokens.dotSize,
+    }),
   };
 }
 
@@ -110,35 +55,36 @@ export function getBadgeWrapperStyle(): CSSProperties {
 
 /* ─── Anchor Position Style ────────────────────────────────── */
 
-const anchorPositionMap: Record<Anchor, CSSProperties> = {
-  'top-right': { top: 0, right: 0, transform: 'translate(50%, -50%)' },
-  'top-left': { top: 0, left: 0, transform: 'translate(-50%, -50%)' },
-  'bottom-right': { bottom: 0, right: 0, transform: 'translate(50%, 50%)' },
-  'bottom-left': { bottom: 0, left: 0, transform: 'translate(-50%, 50%)' },
+const anchorPositionMap: Record<
+  Anchor,
+  { side: CSSProperties; tx: string; ty: string }
+> = {
+  'top-right': { side: { top: 0, right: 0 }, tx: '50%', ty: '-50%' },
+  'top-left': { side: { top: 0, left: 0 }, tx: '-50%', ty: '-50%' },
+  'bottom-right': { side: { bottom: 0, right: 0 }, tx: '50%', ty: '50%' },
+  'bottom-left': { side: { bottom: 0, left: 0 }, tx: '-50%', ty: '50%' },
 };
 
 export function getBadgeAnchorStyle(
   anchor: Anchor,
   offset: [number, number],
 ): CSSProperties {
-  const pos = anchorPositionMap[anchor];
+  const { side, tx, ty } = anchorPositionMap[anchor];
   const [offsetX, offsetY] = offset;
-
-  const baseTransform = pos.transform as string;
-  const offsetTransform =
-    offsetX !== 0 || offsetY !== 0
-      ? ` translate(${offsetX}px, ${offsetY}px)`
-      : '';
+  const transform =
+    offsetX || offsetY
+      ? `translate(${tx}, ${ty}) translate(${offsetX}px, ${offsetY}px)`
+      : `translate(${tx}, ${ty})`;
 
   return {
     position: 'absolute',
-    ...pos,
-    transform: baseTransform + offsetTransform,
+    ...side,
+    transform,
     zIndex: 1,
   };
 }
 
-/* ─── Pulse Keyframe ───────────────────────────────────────── */
+/* ─── Pulse ────────────────────────────────────────────────── */
 
 export const pulseKeyframes = `
   @keyframes fragui-badge-pulse {
