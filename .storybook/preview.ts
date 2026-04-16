@@ -9,6 +9,15 @@ const preview: Preview = {
       },
       disableSaveFromUI: true,
     },
+    a11y: {
+      test: 'error',
+      options: {
+        runOnly: {
+          type: 'tag',
+          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'],
+        },
+      },
+    },
   },
 };
 
