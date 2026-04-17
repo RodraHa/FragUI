@@ -315,6 +315,7 @@ export const IconOnly: Story = {
     children: '',
     tooltip: 'Agregar nuevo',
     radius: 'none',
+    'aria-label': 'Agregar nuevo',
   },
 };
 
