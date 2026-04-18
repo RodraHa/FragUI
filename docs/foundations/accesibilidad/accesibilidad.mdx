@@ -1,0 +1,209 @@
+import { Meta, Story } from '@storybook/addon-docs/blocks';
+import { colors } from '../../../src/theme/tokens/colors';
+import * as AccesibilidadStories from './accesibilidad.stories';
+
+export const exampleGridStyle = {
+	display: 'grid',
+	gap: '16px',
+	gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+	marginTop: '16px',
+};
+
+export const exampleRowStyle = {
+	display: 'flex',
+	flexDirection: 'column',
+	gap: '16px',
+	marginTop: '16px',
+};
+
+export const cardBaseStyle = {
+	border: `1px solid ${colors.neutral[200]}`,
+	padding: '20px',
+	backgroundColor: colors.white,
+};
+
+export const titleStyle = {
+	margin: '0 0 8px',
+	fontWeight: 700,
+	color: colors.neutral[500],
+};
+
+export const textStyle = {
+	margin: 0,
+	color: colors.neutral[400],
+	lineHeight: 1.5,
+};
+
+export const storyWrapperStyle = {
+	marginTop: '16px',
+	display: 'flex',
+	justifyContent: 'center',
+};
+
+export const badCardStyle = {
+	...cardBaseStyle,
+	backgroundColor: colors.red[100],
+};
+
+<Meta title="Foundations/Accesibilidad" />
+
+# Accesibilidad
+
+La accesibilidad se adopta como comportamiento por defecto, no como una capa adicional de configuración. Todo componente debe cumplir con WCAG 2.1 AA y mantener una diferencia perceptible entre estados cuando corresponda.
+
+La navegación debe ser operable por teclado, con un indicador de foco deliberadamente visible y diferenciado. De la misma forma, el uso de HTML semántico prima sobre el empleo de atributos ARIA: los elementos nativos comunican mejor su intención funcional a cualquier tecnología de asistencia.
+
+En FragUI esto implica que la accesibilidad no se resuelve solo con props expuestas, sino con decisiones de implementación consistentes: usar elementos nativos cuando existe una semántica estándar, ocultar del árbol accesible todo adorno puramente visual, anunciar solo los cambios realmente relevantes y evitar comportamientos que interrumpan o desorienten al usuario.
+
+## Principios de implementación
+
+- Todo componente debe cumplir con el estándar WCAG 2.1 AA
+- Cumplir contraste suficiente entre texto, fondo, borde y estados.
+- Asegurar foco visible en todos los elementos interactivos.
+- Garantizar operación completa mediante teclado.
+- Preferir HTML semántico antes que soluciones basadas solo en ARIA.
+- Mantener nombres, roles y estados comprensibles para tecnologías de asistencia.
+
+## Criterios concretos de implementación
+
+### Semántica nativa antes que ARIA
+
+- Los controles interactivos deben construirse sobre elementos nativos como `button`, `a`, `input` o contenedores semánticos equivalentes cuando el patrón lo requiera.
+- `role` no debe sustituir semántica que ya existe de forma nativa; debe complementar únicamente cuando el comportamiento lo exige, por ejemplo en mensajes anunciables o estados dinámicos.
+- Los contenedores no interactivos no deben entrar al orden de foco ni exponer roles innecesarios.
+
+### Nombre accesible y contenido expuesto
+
+- Todo control debe conservar un nombre accesible claro, ya sea por texto visible o mediante `aria-label` cuando la interfaz sea solo icónica.
+- Los iconos, spinners, puntos de estado y otros recursos decorativos deben marcarse como ocultos para tecnologías de asistencia cuando no aporten significado por sí mismos.
+- Ningún estado relevante debe depender solo del color, del tamaño o de la posición; debe existir texto, contexto semántico o una relación accesible con el elemento que representa.
+- El contenido auxiliar solo debe exponerse cuando añade contexto real a la acción o al mensaje principal.
+
+### Anuncio de cambios y regiones vivas
+
+- Los cambios de contenido que ocurren sin mover el foco, como estados de carga, confirmaciones o mensajes de resultado, deben anunciarse con el nivel de prioridad adecuado.
+- La prioridad debe ser proporcional al impacto del mensaje: los errores y advertencias requieren anuncio inmediato; los estados informativos o de éxito deben comunicarse sin interrumpir innecesariamente.
+- Los indicadores exclusivamente visuales no deben apoyarse en `aria-live`; el cambio debe comunicarse desde texto o contexto accesible.
+- Cuando un mensaje o estado deja de estar visible, el nodo debe eliminarse o quedar efectivamente oculto para que no siga formando parte del árbol accesible.
+
+### Teclado, foco y orden de interacción
+
+- El foco debe seguir el orden lógico del contenido, sin introducir paradas intermedias en elementos auxiliares o decorativos.
+- Todo control accionable debe responder a teclado con el comportamiento esperado del elemento nativo, incluyendo activación por `Enter` y `Space` cuando corresponda.
+- El indicador de foco debe ser perceptible, consistente y distinto del estado `hover`; no basta con reutilizar el mismo tratamiento visual.
+
+### Temporización, persistencia y cierre
+
+- Cualquier UI que se oculte automáticamente debe pausar su temporizador cuando el usuario la explora con puntero o teclado.
+- Los mensajes efímeros no deben desaparecer mientras contienen foco o mientras el usuario interactúa con acciones relacionadas.
+- Los mecanismos de cierre deben ser alcanzables por teclado y tener nombre accesible explícito.
+
+### Movimiento y percepción
+
+- Las animaciones deben clarificar estado o transición, no reemplazar información ni competir con ella.
+- Cualquier efecto repetitivo o pulsante debe respetar `prefers-reduced-motion` y desactivarse cuando el usuario así lo haya indicado.
+- Los estados de `hover`, `focus`, `active`, `disabled` y `loading` deben diferenciarse por más de una señal visual cuando sea posible.
+- En estado de carga, el componente debe seguir comunicando con claridad que la acción está temporalmente inactiva o en progreso.
+
+## Ejemplos correctos
+
+<div style={exampleGridStyle}>
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Semántica nativa</h3>
+		<p style={textStyle}>
+			Los controles usan elementos nativos que comunican su rol y comportamiento de teclado sin configuración adicional.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.SemanticaNativa} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Nombre accesible en control icónico</h3>
+		<p style={textStyle}>
+			Un control sin texto visible conserva un nombre accesible claro y el estado del indicador se expone en el elemento asociado.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.NombreAccesibleIcono} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Estado de carga</h3>
+		<p style={textStyle}>
+			El componente comunica que la acción está en progreso, con texto alternativo o indicador visual, y permanece inactivo mientras carga.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.EstadoCarga} />
+		</div>
+	</div>
+</div>
+
+<div style={exampleRowStyle}>
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Anuncio con prioridad adecuada</h3>
+		<p style={textStyle}>
+			Un error se anuncia de forma inmediata para que el lector de pantalla interrumpa y comunique el problema al usuario.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.AnuncioAdecuado} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Cierre accesible</h3>
+		<p style={textStyle}>
+			El botón de cierre es alcanzable por teclado y tiene un nombre accesible explícito que describe su acción.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.CierreAccesible} />
+		</div>
+	</div>
+</div>
+
+## Ejemplos incorrectos
+
+<div style={exampleGridStyle}>
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Sin semántica nativa</h3>
+		<p style={textStyle}>
+			Estilizar un elemento genérico como botón no le otorga rol, foco ni comportamiento de teclado. Un lector de pantalla lo ignora.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.SinSemantica} />
+		</div>
+	</div>
+
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Sin nombre accesible</h3>
+		<p style={textStyle}>
+			Un control icónico sin texto ni aria-label queda mudo para tecnologías de asistencia. El badge decorativo tampoco se explica.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.SinNombreAccesible} />
+		</div>
+	</div>
+
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Estado solo por color</h3>
+		<p style={textStyle}>
+			Un indicador de punto comunica estado solo por color y posición. Sin texto o contexto accesible, la información se pierde.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.EstadoSoloColor} />
+		</div>
+	</div>
+</div>
+
+<div style={exampleRowStyle}>
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Cierre sin etiqueta</h3>
+		<p style={textStyle}>
+			Un mecanismo de cierre sin nombre accesible y sin semántica nativa impide que el usuario sepa qué hace o lo alcance por teclado.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={AccesibilidadStories.CierreSinEtiqueta} />
+		</div>
+	</div>
+</div>
+

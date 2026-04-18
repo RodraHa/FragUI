@@ -1,0 +1,77 @@
+import { Meta, Typeset } from '@storybook/addon-docs/blocks';
+import { fontFamily, fontSize, fontWeight } from '../../../src/theme/tokens/typography';
+
+<Meta title="Foundations/Tipografía" />
+
+export const typography = {
+	type: {
+		primary: fontFamily.satoshi,
+	},
+	weight: {
+		regular: String(fontWeight.regular),
+		medium: String(fontWeight.medium),
+		bold: String(fontWeight.bold),
+		black: String(fontWeight.black),
+	},
+	size: {
+		sm: fontSize.sm,
+		md: fontSize.md,
+		lg: fontSize.lg,
+	},
+};
+
+export const SampleText = 'The quick brown fox jumps over the lazy dog';
+export const typesetFontSizes = [12, 14, 16, 18, 20, 24, 28, 32];
+
+# Tipografía
+
+La elección tipográfica se fundamenta en legibilidad, consistencia y capacidad jerárquica. En FragUI se utiliza Satoshi, una fuente de carácter geométrico y neutral, adecuada para interfaces digitales por su alta legibilidad y ausencia de serifas.
+
+Al mismo tiempo, se define una escala tipográfica contenida que permite distinguir niveles de información sin que el aumento resulte disruptivo para la lectura. La diferencia entre tamaños debe ser perceptible, pero nunca estridente.
+
+También se limita la cantidad de pesos tipográficos para evitar ruido visual. El peso debe reforzar la jerarquía, no reemplazarla.
+
+## Familia tipográfica
+
+- `font-family-base`: {typography.type.primary}
+
+## Escala tipográfica
+
+<Typeset
+	fontSizes={typesetFontSizes}
+	fontWeight={typography.weight.medium}
+	sampleText={SampleText}
+	fontFamily={typography.type.primary}
+/>
+
+## Pesos
+
+<div>
+	<p style={{ fontFamily: typography.type.primary, fontWeight: typography.weight.regular, margin: '0 0 0.75rem' }}>
+		<strong style={{ display: 'inline-block', minWidth: '7rem' }}>Regular</strong>
+		{SampleText}
+	</p>
+	<p style={{ fontFamily: typography.type.primary, fontWeight: typography.weight.medium, margin: '0 0 0.75rem' }}>
+		<strong style={{ display: 'inline-block', minWidth: '7rem' }}>Medium</strong>
+		{SampleText}
+	</p>
+	<p style={{ fontFamily: typography.type.primary, fontWeight: typography.weight.bold, margin: '0 0 0.75rem' }}>
+		<strong style={{ display: 'inline-block', minWidth: '7rem' }}>Bold</strong>
+		{SampleText}
+	</p>
+	<p style={{ fontFamily: typography.type.primary, fontWeight: typography.weight.black, margin: 0 }}>
+		<strong style={{ display: 'inline-block', minWidth: '7rem' }}>Black</strong>
+		{SampleText}
+	</p>
+</div>
+
+## Criterios de uso
+
+- Usar tamaño para construir jerarquía antes de recurrir a color.
+- Reservar pesos altos para énfasis puntual o encabezados.
+- Evitar mezclar demasiados pesos en un mismo componente.
+- Mantener una lectura cómoda en estados, etiquetas, botones y mensajes.
+
+## Referencia
+
+- [Atlassian Design Foundations: Typography](https://atlassian.design/foundations/typography)

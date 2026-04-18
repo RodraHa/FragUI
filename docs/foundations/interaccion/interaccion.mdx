@@ -1,0 +1,201 @@
+import { Meta, Story } from '@storybook/addon-docs/blocks';
+import { colors } from '../../../src/theme/tokens/colors';
+import * as InteraccionStories from './interaccion.stories';
+
+export const exampleGridStyle = {
+	display: 'grid',
+	gap: '16px',
+	gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+	marginTop: '16px',
+};
+
+export const exampleRowStyle = {
+	display: 'flex',
+	flexDirection: 'column',
+	gap: '16px',
+	marginTop: '16px',
+};
+
+export const cardBaseStyle = {
+	border: `1px solid ${colors.neutral[200]}`,
+	padding: '20px',
+	backgroundColor: colors.white,
+};
+
+export const titleStyle = {
+	margin: '0 0 8px',
+	fontWeight: 700,
+	color: colors.neutral[500],
+};
+
+export const textStyle = {
+	margin: 0,
+	color: colors.neutral[400],
+	lineHeight: 1.5,
+};
+
+export const storyWrapperStyle = {
+	marginTop: '16px',
+	display: 'flex',
+	justifyContent: 'center',
+};
+
+export const badCardStyle = {
+	...cardBaseStyle,
+	backgroundColor: colors.red[100],
+};
+
+<Meta title="Foundations/Interacción" />
+
+# Interacción
+
+Las interacciones en FragUI se rigen por inmediatez, claridad y economía visual. Cada cambio de estado debe comunicar una intención específica, evitando transiciones innecesarias o efectos que no aporten valor funcional.
+
+Se evita el uso de animaciones complejas, rebotes o transformaciones que puedan interferir con la comprensión del estado o distraer del objetivo del usuario.
+
+El feedback debe ser inmediato ante cualquier interacción. Acciones como clics, envíos o cambios de estado deben reflejarse sin retraso perceptible, reforzando la sensación de control y previsibilidad en la interfaz.
+
+## Principios de interacción
+
+- Respuesta inmediata ante la acción del usuario.
+- Estados visibles y fáciles de interpretar.
+- Animación solo cuando clarifica un cambio o una transición.
+- Evitar efectos teatrales, rebotes y desplazamientos innecesarios.
+- Respetar siempre la intención y el ritmo del usuario.
+
+## Criterios concretos de implementación
+
+### Feedback inmediato
+
+- Todo control interactivo debe reflejar visualmente la acción del usuario sin demora perceptible: `hover`, `active`, `focus` y `loading` deben tener respuesta visual propia.
+- Los efectos de interacción (`press`, `lift`, `glow`) son mecanismos válidos siempre que refuercen la sensación de control, no compitan con el contenido y puedan desactivarse.
+- Cuando no exista ningún efecto configurado, el control debe seguir comunicando sus estados a través de cambios de color, borde o sombra.
+
+### Estados claros y diferenciados
+
+- Cada estado (`idle`, `hover`, `focus`, `active`, `disabled`, `loading`) debe ser visualmente distinto del anterior. No basta con un cambio de opacidad o un único atributo.
+- El estado `disabled` comunica inactividad permanente; el estado `loading` comunica progreso. No son intercambiables y deben tratarse como estados distintos.
+- El indicador de carga (spinner, texto alternativo) debe hacer evidente que la acción fue recibida y está en proceso.
+
+### Animación con propósito
+
+- Las animaciones deben usarse solo para clarificar transiciones de estado: aparición, desaparición, confirmación o cambio de contexto.
+- Toda animación repetitiva (pulsos, parpadeos, ciclos) debe respetar `prefers-reduced-motion` y desactivarse cuando el usuario lo solicite.
+- No debe existir animación que bloquee la interacción, oculte contenido o retrase la respuesta visual.
+
+### Temporización y control del usuario
+
+- Cuando un elemento tiene una duración de visibilidad limitada, la interacción directa del usuario (puntero o foco) debe pausar el temporizador.
+- La desaparición de contenido efímero no debe sorprender al usuario: debe existir un mecanismo de cierre manual o la posibilidad de extender la permanencia.
+- Los temporizadores no son apropiados para mensajes críticos; estos deben permanecer visibles hasta que el usuario actúe.
+
+## Qué evitar
+
+- Demoras artificiales en confirmaciones o cambios de estado.
+- Microinteracciones decorativas sin propósito funcional.
+- Animaciones que oculten el contenido o dificulten la lectura.
+- Cambios de layout inesperados durante hover, focus o active.
+- Saturación de animaciones simultáneas en el mismo contexto.
+- Estados de carga que no se distinguen de estados inactivos.
+
+## Ejemplos correctos
+
+<div style={exampleGridStyle}>
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Feedback inmediato</h3>
+		<p style={textStyle}>
+			Los efectos de interacción refuerzan la acción del usuario de forma directa e inmediata, sin demora ni ambigüedad.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.FeedbackInmediato} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Estados diferenciados</h3>
+		<p style={textStyle}>
+			Normal, inactivo y en carga son estados visualmente distintos que comunican situaciones diferentes.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.EstadosDiferenciados} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Animación respetuosa</h3>
+		<p style={textStyle}>
+			El pulso refuerza la presencia de un indicador y se desactiva automáticamente con <code>prefers-reduced-motion</code>.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.AnimacionRespetuosa} />
+		</div>
+	</div>
+</div>
+
+<div style={exampleRowStyle}>
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Transición con propósito</h3>
+		<p style={textStyle}>
+			La animación de entrada clarifica que un mensaje acaba de aparecer, sin retrasar la lectura del contenido.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.TransicionConProposito} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<h3 style={titleStyle}>Pausa en interacción</h3>
+		<p style={textStyle}>
+			El temporizador se detiene al pasar el cursor o al poner foco, devolviendo el control al usuario.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.PausaEnInteraccion} />
+		</div>
+	</div>
+</div>
+
+## Ejemplos incorrectos
+
+<div style={exampleGridStyle}>
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Sin feedback</h3>
+		<p style={textStyle}>
+			Un control sin efecto de interacción no confirma visualmente que la acción fue recibida.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.SinFeedback} />
+		</div>
+	</div>
+
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Carga sin indicador</h3>
+		<p style={textStyle}>
+			Un botón inactivo sin indicador visual de progreso no comunica que algo está ocurriendo.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.CargaSinIndicador} />
+		</div>
+	</div>
+
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Animación excesiva</h3>
+		<p style={textStyle}>
+			Múltiples animaciones simultáneas generan ruido visual y compiten con el contenido real del componente.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.AnimacionExcesiva} />
+		</div>
+	</div>
+</div>
+
+<div style={exampleRowStyle}>
+	<div style={badCardStyle}>
+		<h3 style={titleStyle}>Desaparición sin control</h3>
+		<p style={textStyle}>
+			Un mensaje que se oculta automáticamente sin mecanismo de cierre ni pausa deja al usuario sin capacidad de reacción.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={InteraccionStories.DesaparicionSinControl} />
+		</div>
+	</div>
+</div>

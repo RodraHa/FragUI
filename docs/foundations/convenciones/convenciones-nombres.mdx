@@ -1,0 +1,45 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Convenciones de nombres" />
+
+# Convenciones de nombres
+
+Para mantener precisión y escalabilidad en el sistema de diseño, FragUI utiliza una nomenclatura basada en niveles de abstracción tanto para componentes como para tokens de diseño.
+
+La estructura general es:
+
+```text
+categoria-subcategoria-variante
+```
+
+Esta convención permite identificar rápidamente el propósito, contexto y estado de cada pieza del sistema.
+
+## Ejemplos
+
+### Colores
+
+```text
+color-blue-500
+color-blue-400
+```
+
+### Componentes
+
+```text
+button-contained-hover
+button-contained-disabled
+```
+
+### Tipografía
+
+```text
+font-size-sm
+font-size-md
+```
+
+## Criterios de nomenclatura
+
+- Usar nombres descriptivos y consistentes.
+- Evitar ambigüedad entre propósito visual y propósito funcional.
+- Expresar estado o variante solo cuando aporte significado real.
+- Mantener la misma lógica en tokens, estados y variantes.
