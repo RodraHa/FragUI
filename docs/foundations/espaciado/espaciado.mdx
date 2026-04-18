@@ -1,0 +1,111 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { fontFamily } from '../../../src/theme/tokens/typography';
+
+<Meta title="Foundations/Espaciado" />
+
+export const spacingScale = [
+	{ token: 'space-4', value: 4, multiplier: '16 x 0.25' },
+	{ token: 'space-8', value: 8, multiplier: '16 x 0.5' },
+	{ token: 'space-12', value: 12, multiplier: '16 x 0.75' },
+	{ token: 'space-16', value: 16, multiplier: '16 x 1' },
+	{ token: 'space-24', value: 24, multiplier: '16 x 1.5' },
+	{ token: 'space-32', value: 32, multiplier: '16 x 2' },
+	{ token: 'space-48', value: 48, multiplier: '16 x 3' },
+	{ token: 'space-64', value: 64, multiplier: '16 x 4' },
+	{ token: 'space-96', value: 96, multiplier: '16 x 6' },
+	{ token: 'space-128', value: 128, multiplier: '16 x 8' },
+	{ token: 'space-192', value: 192, multiplier: '16 x 12' },
+	{ token: 'space-256', value: 256, multiplier: '16 x 16' },
+	{ token: 'space-384', value: 384, multiplier: '16 x 24' },
+	{ token: 'space-512', value: 512, multiplier: '16 x 32' },
+	{ token: 'space-640', value: 640, multiplier: '16 x 40' },
+	{ token: 'space-768', value: 768, multiplier: '16 x 48' },
+];
+
+export const spacingScaleMax = 768;
+
+# Espaciado
+
+El sistema de espaciado utiliza una progresión geométrica: la diferencia entre los valores iniciales es pequeña, pero aumenta proporcionalmente en los niveles sucesivos de la escala. Como resultado, los cambios de separación son perceptibles para el usuario y permiten construir jerarquía visual sin depender de valores arbitrarios.
+
+En FragUI, el espaciado es el primer recurso para organizar información. Antes de intensificar color o peso tipográfico, se debe resolver la jerarquía mediante distribución, respiración y proximidad entre elementos.
+
+## Escala de referencia
+
+Esta escala muestra la progresión base del sistema a partir de una unidad de 16px y permite comparar de forma visual la distancia relativa entre cada nivel.
+
+<div
+	style={{
+		fontFamily: fontFamily.satoshi,
+		border: '1px solid #E2E8F0',
+		borderRadius: '1rem',
+		overflow: 'hidden',
+		background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+		boxShadow: '0 18px 40px rgba(15, 23, 42, 0.06)',
+	}}
+>
+	<div
+		style={{
+			display: 'grid',
+			gridTemplateColumns: 'minmax(9rem, 12rem) minmax(14rem, 1fr)',
+			gap: '1rem',
+			padding: '0.75rem 1.25rem',
+			backgroundColor: '#F8FAFC',
+			borderBottom: '1px solid #E2E8F0',
+			fontSize: '0.58rem',
+			fontWeight: 700,
+			letterSpacing: '0.01em',
+			color: '#475569',
+		}}
+	>
+		<span>Valor</span>
+		<span>Escala visual</span>
+	</div>
+	<div style={{ padding: '0.5rem 0' }}>
+		{spacingScale.map(({ token, value, multiplier }) => (
+			<div
+				key={token}
+				style={{
+					display: 'grid',
+					gridTemplateColumns: 'minmax(9rem, 12rem) minmax(14rem, 1fr)',
+					gap: '1rem',
+					alignItems: 'center',
+					padding: '0.875rem 1.25rem',
+					borderBottom: '1px solid #EDF2F7',
+				}}
+			>
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+					<strong style={{ fontSize: '1rem', color: '#0F172A' }}>{value}px</strong>
+					<span style={{ fontSize: '0.875rem', color: '#64748B' }}>{multiplier}</span>
+				</div>
+				<div style={{ display: 'flex', alignItems: 'center', minHeight: '1.75rem' }}>
+					<div
+						style={{
+							width: `${(value / spacingScaleMax) * 100}%`,
+							height: '1.5rem',
+							minWidth: '4px',
+							borderRadius: '0.2rem',
+							background: 'linear-gradient(90deg, #FB7185 0%, #FF5F5F 100%)',
+							boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.18)',
+						}}
+					/>
+				</div>
+			</div>
+		))}
+	</div>
+</div>
+
+## Criterios de uso
+
+- Priorizar relaciones consistentes entre contenedor, contenido y acciones.
+- Usar espaciado pequeño para elementos íntimamente relacionados.
+- Usar saltos amplios para separar grupos semánticos distintos.
+- Evitar márgenes y paddings improvisados por caso específico.
+
+## Regla de jerarquía
+
+La jerarquía visual debe construirse en orden descendente usando espacios, tipografía y color.
+
+## Referencia
+
+- [Space in design systems](https://medium.com/eightshapes-llc/space-in-design-systems-188bcbae0d62)

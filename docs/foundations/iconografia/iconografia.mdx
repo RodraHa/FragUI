@@ -1,0 +1,190 @@
+import { Meta, IconGallery, IconItem, Canvas, Story } from '@storybook/addon-docs/blocks';
+import { colors } from '../../../src/theme/tokens/colors';
+import * as IconografiaStories from './iconografia.stories';
+
+import { Icon as IconExample } from './Icon';
+
+export const exampleGridStyle = {
+	display: 'grid',
+	gap: '16px',
+	gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+	marginTop: '16px',
+};
+
+export const cardBaseStyle = {
+	border: `1px solid ${colors.neutral[200]}`,
+	padding: '16px',
+	backgroundColor: colors.white,
+};
+
+export const titleStyle = {
+	display: 'flex',
+	alignItems: 'center',
+	gap: '10px',
+	marginBottom: '10px',
+	fontWeight: 700,
+	color: colors.neutral[500],
+};
+
+export const textStyle = {
+	margin: 0,
+	color: colors.neutral[400],
+	lineHeight: 1.5,
+};
+
+
+
+export const storyWrapperStyle = {
+	marginTop: '12px',
+	display: 'flex',
+	justifyContent: 'center',
+	overflow: 'hidden',
+};
+
+export const badCardStyle = {
+	...cardBaseStyle,
+	backgroundColor: colors.red[100],
+};
+
+
+
+<Meta title="Foundations/Iconografía" />
+
+# Iconografía
+
+FragUI adopta el uso exclusivo de iconos sólidos simples. Se evitan variantes outline o decorativas que introduzcan fricción en la claridad visual o afecten la legibilidad en tamaños pequeños.
+
+Los iconos deben derivarse de formas geométricas simples y reconocibles, alineadas con los principios de neutralidad y crudeza visual definidos por la identidad del sistema. Su función es secundar la información transmitida, no competir con ella.
+
+## Galería
+
+<IconGallery>
+	<IconItem name="home">
+		<IconExample name="home" />
+	</IconItem>
+	<IconItem name="archive">
+		<IconExample name="archive" />
+	</IconItem>
+	<IconItem name="cart">
+		<IconExample name="cart" />
+	</IconItem>
+	<IconItem name="plusCircle">
+		<IconExample name="plusCircle" />
+	</IconItem>
+	<IconItem name="checkSquare">
+		<IconExample name="checkSquare" />
+	</IconItem>
+	<IconItem name="infoSquare">
+		<IconExample name="infoSquare" />
+	</IconItem>
+	<IconItem name="xSquare">
+		<IconExample name="xSquare" />
+	</IconItem>
+	<IconItem name="warningFilled">
+		<IconExample name="warningFilled" />
+	</IconItem>
+	<IconItem name="closeBold">
+		<IconExample name="closeBold" />
+	</IconItem>
+</IconGallery>
+
+## Principios de uso
+
+- Preferir siluetas cerradas y legibles en tamaños reducidos.
+- Evitar detalles superfluos, adornos o trazos ambiguos.
+- Mantener consistencia de peso visual entre iconos del mismo contexto.
+- Usar iconos solo cuando aporten significado, refuercen una acción o reduzcan carga cognitiva.
+
+## Ejemplos correctos
+
+<div style={exampleGridStyle}>
+	<div style={cardBaseStyle}>
+		<div style={titleStyle}>
+			<IconExample name="infoSquare" />
+			<span>Estado informativo</span>
+		</div>
+		<p style={textStyle}>
+			El icono acompana el mensaje y aporta contexto sin duplicar ni reemplazar el texto.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={IconografiaStories.EstadoInformativo} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<div style={titleStyle}>
+			<IconExample name="plusCircle" />
+			<span>Accion clara</span>
+		</div>
+		<p style={textStyle}>
+			El icono anticipa la accion y mantiene el mismo color que el control al que pertenece.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={IconografiaStories.AccionCorrecta} />
+		</div>
+	</div>
+
+	<div style={cardBaseStyle}>
+		<div style={titleStyle}>
+			<IconExample name="archive" />
+			<span>Soporte semantico</span>
+		</div>
+		<p style={textStyle}>
+			El icono resume una categoria o destino concreto y sigue siendo secundario frente al texto.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={IconografiaStories.SoporteSemantico} />
+		</div>
+	</div>
+</div>
+
+## Ejemplos incorrectos
+
+<div style={exampleGridStyle}>
+	<div style={badCardStyle}>
+		<div style={titleStyle}>
+			<IconExample name="warningFilled" style={{ color: colors.red[400] }} />
+			<span>Icono sin necesidad</span>
+		</div>
+		<p style={textStyle}>
+			Si el texto ya es suficiente, agregar un icono solo introduce ruido visual y compite con la lectura.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={IconografiaStories.IconoSinNecesidad} />
+		</div>
+	</div>
+
+	<div style={badCardStyle}>
+		<div style={titleStyle}>
+			<IconExample name="xSquare" style={{ color: colors.red[400] }} />
+			<span>Semantica equivocada</span>
+		</div>
+		<p style={textStyle}>
+			Un icono de error en una accion positiva o neutra distorsiona la intencion y genera friccion innecesaria.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={IconografiaStories.SemanticaEquivocada} />
+		</div>
+	</div>
+
+	<div style={badCardStyle}>
+		<div style={titleStyle}>
+			<IconExample name="closeBold" style={{ color: colors.red[400] }} />
+			<span>Saturacion visual</span>
+		</div>
+		<p style={textStyle}>
+			Mezclar varios iconos para la misma idea rompe la jerarquia y hace que el conjunto sea mas dificil de escanear.
+		</p>
+		<div style={storyWrapperStyle}>
+			<Story of={IconografiaStories.SaturacionVisual} />
+		</div>
+	</div>
+</div>
+
+## Color
+
+El color de los iconos es contextual y debe derivarse de los tokens semanticos del sistema. Por defecto, los iconos deben heredar el color del texto o del estado del componente al que pertenecen.
+
+## Regla de decision
+
+Si el elemento sigue siendo claro y suficiente sin icono, el icono probablemente no es necesario.

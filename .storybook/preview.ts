@@ -2,6 +2,24 @@ import type { Preview } from '@storybook/react-vite';
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: [
+          'Foundations',
+          [
+            'Identidad',
+            'Tipografía',
+            'Espaciado',
+            'Color',
+            'Iconografía',
+            'Accesibilidad',
+            'Interacción',
+            'Convenciones de nombres',
+          ],
+          'Components',
+        ],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

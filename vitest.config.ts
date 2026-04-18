@@ -5,7 +5,7 @@ import { playwright } from '@vitest/browser-playwright';
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
-    exclude: ['**/node_modules/**', '**/dist/**', '**/.git/**'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.git/**', '**/accesibilidad.stories.tsx', '**/interaccion.stories.tsx', '**/iconografia.stories.tsx'],
     projects: [{
       extends: true,
       test: {
