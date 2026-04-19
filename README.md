@@ -10,25 +10,32 @@ Biblioteca de componentes React desarrollada con TypeScript.
  └─ workflows/           # GitHub Actions
 dist/                    # Build output
 src/
- ├─ assets/             # Assets estáticos
+ ├─ assets/             # Assets estáticos (fuentes, iconos SVG)
  ├─ components/         # Componentes de la biblioteca
- │   ├─ alert/
- │   │   ├─ tests/
- │   │   ├─ Alert.tsx
- │   │   ├─ Alert.styles.tsx
- │   │   └─ index.ts
- │   └─ button/
- │   └─ .../
+ │   └─ alert/          # Ejemplo de estructura por componente
+ │       ├─ Alert.tsx
+ │       ├─ Alert.styles.ts
+ │       ├─ Alert.test.tsx
+ │       └─ index.ts
  ├─ hooks/              # Hooks genéricos reutilizables
  ├─ types/              # Definiciones de tipos TypeScript
  ├─ theme/              # Sistema de temas
- │   └─ tokens/         # Design tokens
+ │   └─ tokens/         # Design tokens (colores, tipografía, por componente)
  ├─ utils/              # Utilidades y helpers
  └─ index.ts            # Punto de entrada principal
 tests/
  └─ shared/             # Helpers, setup y mocks para testing
 docs/
- └─ components/         # Documentación de componentes
+ ├─ foundations/        # Documentación del sistema de diseño (MDX + stories)
+ │   ├─ identidad/
+ │   ├─ tipografia/
+ │   ├─ color/
+ │   ├─ espaciado/
+ │   ├─ iconografia/
+ │   ├─ accesibilidad/
+ │   ├─ interaccion/
+ │   └─ convenciones/
+ └─ components/         # Stories de Storybook por componente
 ```
 
 ## Instalación
@@ -93,7 +100,7 @@ Para visualizar y desarrollar componentes de forma aislada:
 
 2. Abre tu navegador en [http://localhost:6006](http://localhost:6006)
 
-3. Los stories de cada componente se encuentran en la carpeta del componente con el nombre `ComponentName.stories.tsx`
+3. Las stories de componentes están en `docs/components/` y las de fundamentos del sistema de diseño en `docs/foundations/`
 
 ## Convenciones de Código
 
@@ -122,7 +129,6 @@ Este proyecto sigue el **Airbnb React Style Guide** junto con las siguientes con
 ### Props
 - Usa **camelCase** para nombres de props
 - Usa **PascalCase** si el valor de la prop es un componente React
-- Define siempre `defaultProps` explícitos para todas las props no requeridas
 - Evita usar nombres de props del DOM para propósitos diferentes
 
 **Ejemplo:**

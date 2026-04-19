@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Badge } from './Badge';
-import { Button } from '../button/Button';
-import { fontFamily } from '../../theme/tokens/typography';
+import { Badge } from '../../../src/components/badge/Badge';
+import { Button } from '../../../src/components/button/Button';
+import { fontFamily } from '../../../src/theme/tokens/typography';
 
 const meta = {
   title: 'Components/Badge',

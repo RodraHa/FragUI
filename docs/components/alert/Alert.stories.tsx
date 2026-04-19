@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Alert } from './Alert';
-import { fontFamily } from '../../theme/tokens/typography';
+import { Alert } from '../../../src/components/alert/Alert';
+import { fontFamily } from '../../../src/theme/tokens/typography';
 import {
   BxsHome,
   BxsArchive,
@@ -10,7 +10,7 @@ import {
   BxsInfoSquare,
   BxsXSquare,
   WarningFilled,
-} from '../../assets/icons';
+} from '../../../src/assets/icons';
 
 const iconMap: Record<string, React.ReactNode> = {
   none: undefined,

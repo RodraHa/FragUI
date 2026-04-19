@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Button } from './Button';
+import { Button } from '../../../src/components/button/Button';
 import {
   BxsHome,
   BxsArchive,
   BxsCart,
   BxsPlusCircle,
-} from '../../assets/icons';
+} from '../../../src/assets/icons';
 
 const iconMap: Record<string, React.ReactNode> = {
   none: undefined,
