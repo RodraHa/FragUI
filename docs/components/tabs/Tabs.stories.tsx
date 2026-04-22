@@ -150,11 +150,13 @@ export const Disabled: Story = {
   },
   // Disabled state applies opacity: 0.45 to the container by design, which lowers
   // the effective contrast below AA. This is an intentional visual cue, so we
-  // exempt color-contrast for this specific story (pattern documented by the a11y addon).
+  // exempt color-contrast for this specific story via axe's rule override.
   parameters: {
     a11y: {
-      config: {
-        rules: [{ id: 'color-contrast', enabled: false }],
+      options: {
+        rules: {
+          'color-contrast': { enabled: false },
+        },
       },
     },
   },
