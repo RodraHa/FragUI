@@ -25,3 +25,10 @@ export type {
   CardDescriptionProps,
   CardActionsProps,
 } from './components/card';
+
+export { DataList } from './components/data-list';
+export type {
+  DataListProps,
+  DataItem,
+  DataItemState,
+} from './components/data-list';
