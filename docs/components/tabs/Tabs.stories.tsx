@@ -148,6 +148,16 @@ export const Disabled: Story = {
       { id: 'disable', label: 'DISABLE', content: 'Contenido deshabilitado.' },
     ],
   },
+  // Disabled state applies opacity: 0.45 to the container by design, which lowers
+  // the effective contrast below AA. This is an intentional visual cue, so we
+  // exempt color-contrast for this specific story (pattern documented by the a11y addon).
+  parameters: {
+    a11y: {
+      config: {
+        rules: [{ id: 'color-contrast', enabled: false }],
+      },
+    },
+  },
 };
 
 // ─── Activación ───────────────────────────────────────────────
@@ -179,7 +189,7 @@ export const Controlled: Story = {
           <div
             style={{
               fontSize: 12,
-              color: '#999',
+              color: '#424242',
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
             }}

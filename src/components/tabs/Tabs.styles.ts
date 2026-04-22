@@ -36,11 +36,12 @@ export function getTabStyle(
   state: TabVisualState,
   orientation: Orientation,
 ): CSSProperties {
+  // Idle uses neutral[400] (not [300]) so contrast against white meets WCAG 2.1 AA (4.5:1).
   const color =
     state === 'disabled'
       ? colors.neutral[200]
       : state === 'idle'
-        ? colors.neutral[300]
+        ? colors.neutral[400]
         : colors.neutral[500];
 
   const background = state === 'hover' ? colors.neutral[100] : 'transparent';
