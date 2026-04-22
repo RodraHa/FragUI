@@ -14,3 +14,14 @@ export type {
 
 export { Tabs } from './components/tabs';
 export type { TabsProps, TabItem } from './components/tabs';
+
+export { Card } from './components/card';
+export type {
+  CardProps,
+  CardMediaProps,
+  CardBodyProps,
+  CardEyebrowProps,
+  CardTitleProps,
+  CardDescriptionProps,
+  CardActionsProps,
+} from './components/card';
