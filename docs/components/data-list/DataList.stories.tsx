@@ -32,8 +32,7 @@ const baseItems: DataItem[] = [
     label: 'Título del Dato 4',
     description:
       'Descripción larga de la Data List que incluye más información relevante del dato 4',
-    meta: <Badge variant="subtle" color="ink" label="Inactivo" size="sm" />,
-    disabled: true,
+    meta: <Badge variant="subtle" color="pine" label="Estado" size="sm" />,
   },
 ];
 
@@ -41,6 +40,18 @@ const simpleItems: DataItem[] = baseItems.map((i) => ({
   ...i,
   meta: 'Estado',
 }));
+
+const itemsWithDisabled: DataItem[] = [
+  ...baseItems.slice(0, 3),
+  {
+    id: 'dato-4',
+    label: 'Título del Dato 4',
+    description:
+      'Descripción larga de la Data List que incluye más información relevante del dato 4',
+    meta: <Badge variant="subtle" color="ink" label="Inactivo" size="sm" />,
+    disabled: true,
+  },
+];
 
 const meta = {
   title: 'Components/DataList',
@@ -232,6 +243,35 @@ export const Empty: Story = {
       description: {
         story:
           'Cuando `items` está vacío y no hay `loading`, se renderiza el `emptyState`. Si no lo pasas, se muestra un mensaje por defecto ("No hay datos").',
+      },
+    },
+  },
+};
+
+// ─── WithDisabledItem ──────────────────────────────────────────
+
+export const WithDisabledItem: Story = {
+  name: 'Con ítem deshabilitado',
+  args: {
+    items: itemsWithDisabled,
+    variant: 'default',
+  },
+  // El ítem con `disabled: true` aplica opacity: 0.4 por diseño (Figma
+  // spec), lo que baja el contraste efectivo del label / description /
+  // meta / badge debajo de AA. Es una señal visual intencional, así que
+  // exentamos color-contrast solo en esta story.
+  parameters: {
+    a11y: {
+      options: {
+        rules: {
+          'color-contrast': { enabled: false },
+        },
+      },
+    },
+    docs: {
+      description: {
+        story:
+          'Cuando un `DataItem` tiene `disabled: true`, el ítem se renderiza con `opacity: 0.4` y no responde a click / teclado. Cuando `selectable=true`, se añade `aria-disabled="true"` al `option` correspondiente.',
       },
     },
   },
