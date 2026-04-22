@@ -11,3 +11,6 @@ export type {
   AlertVariant,
   AlertAnimation,
 } from './components/alert';
+
+export { Tabs } from './components/tabs';
+export type { TabsProps, TabItem } from './components/tabs';
