@@ -5,9 +5,9 @@ import type { Color } from '../types';
  * Semantic statuses resolve to the palette colors used across
  * status-aware components (alerts, toasts, inline validations…).
  * ────────────────────────────────────────────────────────────── */
-export type Status = 'success' | 'info' | 'warning' | 'error';
+export type AlertStatus = 'success' | 'info' | 'warning' | 'error';
 
-export const statusToColor: Record<Status, Color> = {
+export const statusToColor: Record<AlertStatus, Color> = {
   success: 'pine',
   info: 'ink',
   warning: 'ochre',
