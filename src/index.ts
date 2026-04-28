@@ -32,3 +32,6 @@ export type {
   DataItem,
   DataItemState,
 } from './components/data-list';
+
+export { InputText } from './components/input-text';
+export type { InputTextProps } from './components/input-text';

@@ -6,3 +6,5 @@ export { alertTypography, alertSpacing } from './alert';
 export { tabsTypography, tabsSpacing } from './tabs';
 export { cardTypography, cardSpacing } from './card';
 export { dataListTypography, dataListSpacing } from './dataList';
+export { inputTextSize } from './inputText';
+export type { InputTextSizeKey } from './inputText';
