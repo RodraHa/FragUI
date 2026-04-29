@@ -35,3 +35,6 @@ export type {
 
 export { InputText } from './components/input-text';
 export type { InputTextProps } from './components/input-text';
+
+export { Select } from './components/select';
+export type { SelectProps, SelectOption } from './components/select';

@@ -8,3 +8,5 @@ export { cardTypography, cardSpacing } from './card';
 export { dataListTypography, dataListSpacing } from './dataList';
 export { inputTextSize } from './inputText';
 export type { InputTextSizeKey } from './inputText';
+export { selectTriggerSize, selectPanelSize } from './select';
+export type { SelectSizeKey } from './select';
