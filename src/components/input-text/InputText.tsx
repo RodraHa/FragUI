@@ -11,7 +11,7 @@ import {
 
 export interface InputTextProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  'onChange' | 'size' | 'prefix'
+  'onChange' | 'size' | 'prefix' | 'width'
 > {
   /** Tipo nativo del input. @default "text" */
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
@@ -27,6 +27,18 @@ export interface InputTextProps extends Omit<
    * @default "idle"
    */
   status?: FormStatus;
+  /**
+   * Si es `true`, el input ocupa el 100 % del contenedor padre.
+   * Si es `false`, el input se adapta a su contenido con un ancho mínimo
+   * razonable. @default true
+   */
+  fullWidth?: boolean;
+  /**
+   * Ancho personalizado (cualquier valor CSS válido). Sobreescribe
+   * el comportamiento de `fullWidth` cuando se proporciona.
+   * @example "20rem" | "50%" | "300px"
+   */
+  width?: string | number;
   /** Muestra botón para limpiar el valor. @default false */
   clearable?: boolean;
   /** Muestra contador de caracteres. Requiere maxLength. @default false */
@@ -65,6 +77,8 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
       status = 'idle',
       disabled = false,
       readOnly = false,
+      fullWidth = true,
+      width,
       clearable = false,
       showCount = false,
       autoComplete = 'off',
@@ -151,7 +165,15 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     };
 
     const containerStyle = {
-      ...getContainerStyle(size, status, disabled, readOnly, isFocused),
+      ...getContainerStyle(
+        size,
+        status,
+        disabled,
+        readOnly,
+        isFocused,
+        fullWidth,
+        width,
+      ),
       ...style,
     };
 
@@ -160,6 +182,7 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
         data-component="input-text"
         data-size={size}
         data-status={status}
+        {...(fullWidth ? { 'data-fullwidth': 'true' } : {})}
         {...(disabled ? { 'data-disabled': 'true' } : {})}
         {...(readOnly ? { 'data-readonly': 'true' } : {})}
         style={containerStyle}
