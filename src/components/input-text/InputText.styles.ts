@@ -96,7 +96,7 @@ export const affixStyle: CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
   flexShrink: 0,
-  color: colors.neutral[300],
+  color: colors.neutral[400],
 };
 
 /* ─── Clear button ──────────────────────────────────────────────
@@ -111,7 +111,7 @@ export const clearButtonStyle: CSSProperties = {
   background: 'none',
   padding: 0,
   cursor: 'pointer',
-  color: colors.neutral[300],
+  color: colors.neutral[400],
   lineHeight: 1,
   fontSize: 'inherit',
   fontFamily: 'inherit',
@@ -127,7 +127,7 @@ export function getCounterStyle(isOverLimit: boolean): CSSProperties {
     marginTop: '0.25rem',
     fontSize: '0.75rem',
     fontFamily: fontFamily.satoshi,
-    color: isOverLimit ? colors.red[500] : colors.neutral[300],
+    color: isOverLimit ? colors.red[500] : colors.neutral[400],
     textAlign: 'right',
     userSelect: 'none',
   };

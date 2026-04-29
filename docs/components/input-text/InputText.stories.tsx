@@ -276,7 +276,7 @@ export const WithSuffix: Story = {
   },
   args: {
     suffix: (
-      <span style={{ fontSize: '0.85em', opacity: 0.6 }}>kg</span>
+      <span style={{ fontSize: '0.85em' }}>kg</span>
     ),
     placeholder: 'Peso',
     type: 'number',
@@ -288,7 +288,7 @@ export const WithSuffix: Story = {
 export const WithPrefixAndSuffix: Story = {
   args: {
     prefix: <span style={{ fontSize: '0.9em' }}>$</span>,
-    suffix: <span style={{ fontSize: '0.85em', opacity: 0.6 }}>MXN</span>,
+    suffix: <span style={{ fontSize: '0.85em' }}>MXN</span>,
     placeholder: '0.00',
     type: 'number',
   },
