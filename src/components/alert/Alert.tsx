@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAutoHide, useKeyframes } from '../../hooks';
 import { statusToColor } from '../../theme/presets';
+import type { AlertStatus } from '../../theme/presets';
 import { alertSpacing } from '../../theme/tokens/alert';
 import {
   BxsCheckSquare,
@@ -26,7 +27,7 @@ import {
 } from './Alert.styles';
 import { Button } from '../button/Button';
 
-export type AlertStatus = 'success' | 'info' | 'warning' | 'error';
+export type { AlertStatus };
 export type AlertVariant = 'filled' | 'outlined' | 'stripe' | 'banner';
 export type AlertAnimation = 'none' | 'fade' | 'slide';
 
