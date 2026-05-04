@@ -130,6 +130,7 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
       data-component="field-group"
       data-columns={columns}
       data-gap={gap}
+      disabled={effectiveDisabled}
       {...(effectiveDisabled ? { 'data-disabled': 'true' } : {})}
       {...(collapsible ? { 'data-collapsible': 'true' } : {})}
       {...(isCollapsed ? { 'data-collapsed': 'true' } : {})}
@@ -156,7 +157,12 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
               </span>
             </button>
           ) : (
-            <span style={getTitleStyle(effectiveDisabled)}>{title}</span>
+            <span
+              style={getTitleStyle(effectiveDisabled)}
+              aria-disabled={effectiveDisabled ? 'true' : undefined}
+            >
+              {title}
+            </span>
           )}
         </legend>
       )}
@@ -167,6 +173,7 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
         <span
           data-field-group-description
           style={getDescriptionStyle(effectiveDisabled)}
+          aria-disabled={effectiveDisabled ? 'true' : undefined}
         >
           {description}
         </span>

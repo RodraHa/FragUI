@@ -140,7 +140,11 @@ export const Field: React.FC<FieldProps> = ({
     >
       {/* Label */}
       {label != null && (
-        <label htmlFor={inputId} style={getLabelStyle(size, effectiveDisabled)}>
+        <label
+          htmlFor={inputId}
+          style={getLabelStyle(size, effectiveDisabled)}
+          aria-disabled={effectiveDisabled ? 'true' : undefined}
+        >
           {label}
           {required && (
             <span aria-hidden="true" style={requiredIndicatorStyle}>
@@ -168,6 +172,7 @@ export const Field: React.FC<FieldProps> = ({
           role={hasError ? 'alert' : undefined}
           data-field-subtext={hasError ? 'error' : 'helper'}
           style={getSubTextStyle(size, effectiveStatus, hasError)}
+          aria-disabled={effectiveDisabled ? 'true' : undefined}
         >
           {subText}
         </span>
