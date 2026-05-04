@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import type { ChangeEvent, FocusEvent } from 'react';
 import type { Size, FormStatus } from '../../types';
+import { useFieldContext } from '../../contexts';
 import {
   getContainerStyle,
   getInputStyle,
@@ -13,6 +14,8 @@ export interface InputTextProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   'onChange' | 'size' | 'prefix' | 'width'
 > {
+  /** Nombre del campo. Se hereda desde FieldContext si no se pasa directamente. */
+  name?: string;
   /** Tipo nativo del input. @default "text" */
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
   /** Valor controlado. */
@@ -73,9 +76,9 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
   (
     {
       type = 'text',
-      size = 'md',
-      status = 'idle',
-      disabled = false,
+      size: sizeProp,
+      status: statusProp,
+      disabled: disabledProp = false,
       readOnly = false,
       fullWidth = true,
       width,
@@ -86,7 +89,7 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
       defaultValue = '',
       value,
       placeholder,
-      name,
+      name: nameProp,
       maxLength,
       prefix,
       suffix,
@@ -99,6 +102,34 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     },
     ref,
   ) => {
+    // ── FieldContext integration (§2.6) ─────────────────────────────
+    // Direct props win over context, except `disabled` which always
+    // OR-merges (ancestor wins, §2.4).
+    const fieldCtx = useFieldContext();
+
+    const size: Size = sizeProp ?? fieldCtx?.size ?? 'md';
+    const status: FormStatus = statusProp ?? fieldCtx?.status ?? 'idle';
+    // Ancestor disabled always wins — no child can re-enable (§2.4)
+    const disabled = (fieldCtx?.disabled ?? false) || disabledProp;
+    const name = nameProp ?? fieldCtx?.name;
+    // id from context takes precedence over rest spread; direct id in rest wins over context
+    const resolvedId =
+      (rest as React.InputHTMLAttributes<HTMLInputElement>).id ??
+      fieldCtx?.inputId;
+    const resolvedDescribedBy =
+      (rest as React.InputHTMLAttributes<HTMLInputElement>)[
+        'aria-describedby'
+      ] ?? fieldCtx?.describedById;
+    const resolvedAriaInvalid =
+      (rest as React.InputHTMLAttributes<HTMLInputElement>)['aria-invalid'] ??
+      (status === 'error' ? ('true' as const) : undefined);
+    const resolvedAriaRequired =
+      (rest as React.InputHTMLAttributes<HTMLInputElement>)['aria-required'] ??
+      (fieldCtx?.required ? ('true' as const) : undefined);
+    // Native required attribute (§3 accessibility contract)
+    const resolvedRequired =
+      (rest as React.InputHTMLAttributes<HTMLInputElement>).required ??
+      fieldCtx?.required;
     const [isFocused, setIsFocused] = useState(false);
 
     // Internal ref always points to the native input (used for clear).
@@ -203,13 +234,18 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
           {...rest}
           ref={setRefs}
           type={type}
+          id={resolvedId}
           name={name}
           disabled={disabled}
           readOnly={readOnly}
+          required={resolvedRequired}
           placeholder={placeholder}
           maxLength={maxLength}
           autoComplete={autoComplete}
           autoFocus={autoFocus}
+          aria-invalid={resolvedAriaInvalid}
+          aria-required={resolvedAriaRequired}
+          aria-describedby={resolvedDescribedBy}
           value={isControlled ? value : undefined}
           defaultValue={isControlled ? undefined : defaultValue}
           onChange={handleChange}

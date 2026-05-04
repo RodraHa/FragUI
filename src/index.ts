@@ -38,3 +38,15 @@ export type { InputTextProps } from './components/input-text';
 
 export { Select } from './components/select';
 export type { SelectProps, SelectOption } from './components/select';
+
+export { Field } from './components/field';
+export type { FieldProps } from './components/field';
+
+export { FieldGroup } from './components/field-group';
+export type { FieldGroupProps } from './components/field-group';
+
+// Contexts — exported for advanced consumers and future Form integration
+export { useFieldContext, FieldContext } from './contexts';
+export type { FieldContextValue } from './contexts';
+export { useFieldGroupContext, FieldGroupContext } from './contexts';
+export type { FieldGroupContextValue } from './contexts';
