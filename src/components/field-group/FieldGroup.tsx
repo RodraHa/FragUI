@@ -173,7 +173,7 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
       )}
 
       {/* Spacer between header block and grid when both exist */}
-      {hasHeader && <div style={getHeaderStyle(false)} aria-hidden="true" />}
+      {hasHeader && <div style={getHeaderStyle(true)} aria-hidden="true" />}
 
       {/* Content grid — hidden attribute removes from tab order when
           collapsed, satisfying the accessibility contract (§4). */}
