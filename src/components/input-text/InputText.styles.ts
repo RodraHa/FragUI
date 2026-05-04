@@ -25,13 +25,28 @@ const statusFocusRing: Record<FormStatus, string> = {
 /* ─── Container (wrapper div) ───────────────────────────────────
  * Owns the border, background, border-radius, and focus ring.
  * The native <input> inside has no border of its own.
+ *
+ * Width behaviour:
+ *   – width prop    → explicit CSS width (overrides fullWidth)
+ *   – fullWidth     → 100 % of parent (default for form inputs)
+ *   – !fullWidth    → inline-flex + auto width with a sensible min
  * ────────────────────────────────────────────────────────────── */
+
+/** Minimum width per size so the input never collapses when not fullWidth */
+const autoMinWidth: Record<Size, string> = {
+  sm: '8rem',
+  md: '12rem',
+  lg: '16rem',
+};
+
 export function getContainerStyle(
   size: Size,
   status: FormStatus,
   disabled: boolean,
   readOnly: boolean,
   isFocused: boolean,
+  fullWidth: boolean = true,
+  width?: string | number,
 ): CSSProperties {
   const tokens = inputTextSize[size];
   const borderColor = disabled
@@ -40,11 +55,16 @@ export function getContainerStyle(
       ? statusFocusRing[status]
       : statusBorder[status];
 
+  // Resolve width: explicit > fullWidth > auto
+  const resolvedWidth: string | number | undefined =
+    width !== undefined ? width : fullWidth ? '100%' : undefined;
+
   return {
     display: 'inline-flex',
     alignItems: 'center',
     gap: tokens.gap,
     padding: tokens.padding,
+    minHeight: tokens.height,
     height: tokens.height,
     fontSize: tokens.fontSize,
     fontWeight: tokens.fontWeight,
@@ -63,9 +83,11 @@ export function getContainerStyle(
     outlineOffset: isFocused ? '2px' : '0',
     opacity: disabled ? 0.6 : 1,
     cursor: disabled ? 'not-allowed' : 'text',
-    transition: 'border-color 0.15s ease, outline 0.15s ease',
+    transition:
+      'border-color 0.15s ease, outline 0.15s ease, background-color 0.15s ease, opacity 0.15s ease',
     position: 'relative',
-    width: '100%',
+    width: resolvedWidth,
+    ...(resolvedWidth === undefined ? { minWidth: autoMinWidth[size] } : {}),
   };
 }
 
@@ -124,8 +146,8 @@ export const clearButtonStyle: CSSProperties = {
 export function getCounterStyle(isOverLimit: boolean): CSSProperties {
   return {
     display: 'block',
-    marginTop: '0.25rem',
-    fontSize: '0.75rem',
+    marginTop: 'clamp(0.125rem, 0.08rem + 0.2vw, 0.25rem)',
+    fontSize: 'clamp(0.6875rem, 0.6rem + 0.25vw, 0.8125rem)',
     fontFamily: fontFamily.satoshi,
     color: isOverLimit ? colors.red[500] : colors.neutral[400],
     textAlign: 'right',

@@ -108,6 +108,54 @@ describe('InputText', () => {
   });
 
   // -------------------------------------------------------------------------
+  // 4b. Props: fullWidth
+  // -------------------------------------------------------------------------
+  describe('fullWidth', () => {
+    it('defaults to fullWidth — wrapper has data-fullwidth="true"', () => {
+      const { container } = render(<InputText />);
+      expect(container.firstElementChild).toHaveAttribute(
+        'data-fullwidth',
+        'true',
+      );
+    });
+
+    it('applies width: 100% by default', () => {
+      const { container } = render(<InputText />);
+      expect(container.firstElementChild).toHaveStyle({ width: '100%' });
+    });
+
+    it('does not set data-fullwidth when fullWidth={false}', () => {
+      const { container } = render(<InputText fullWidth={false} />);
+      expect(container.firstElementChild).not.toHaveAttribute('data-fullwidth');
+    });
+
+    it('does not set width: 100% when fullWidth={false}', () => {
+      const { container } = render(<InputText fullWidth={false} />);
+      expect(container.firstElementChild).not.toHaveStyle({ width: '100%' });
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // 4c. Props: width
+  // -------------------------------------------------------------------------
+  describe('width', () => {
+    it('applies a custom string width to the container', () => {
+      const { container } = render(<InputText width="20rem" />);
+      expect(container.firstElementChild).toHaveStyle({ width: '20rem' });
+    });
+
+    it('applies a custom numeric width (px) to the container', () => {
+      const { container } = render(<InputText width={300} />);
+      expect(container.firstElementChild).toHaveStyle({ width: '300px' });
+    });
+
+    it('overrides fullWidth when width is provided', () => {
+      const { container } = render(<InputText fullWidth width="50%" />);
+      expect(container.firstElementChild).toHaveStyle({ width: '50%' });
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // 5. Props: placeholder
   // -------------------------------------------------------------------------
   describe('placeholder', () => {

@@ -19,7 +19,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div style={{ maxWidth: '360px', width: '100%' }}>
+      <div style={{ width: '100%' }}>
         <Story />
       </div>
     ),
@@ -129,6 +129,22 @@ const meta = {
       table: {
         category: 'Interacción',
         defaultValue: { summary: 'false' },
+      },
+    },
+    // ── Layout ──────────────────────────────────────────────
+    fullWidth: {
+      control: 'boolean',
+      description: 'Si es true, el input ocupa el 100% del contenedor padre.',
+      table: {
+        category: 'Layout',
+        defaultValue: { summary: 'true' },
+      },
+    },
+    width: {
+      control: 'text',
+      description: 'Ancho personalizado (ej: "300px", "50%"). Sobreescribe fullWidth.',
+      table: {
+        category: 'Layout',
       },
     },
     autoComplete: {
@@ -396,5 +412,23 @@ export const Password: Story = {
     type: 'password',
     placeholder: 'Contraseña',
     autoComplete: 'current-password',
+  },
+};
+
+// ── Layout: Full Width ───────────────────────────────────────
+
+export const FullWidth: Story = {
+  args: {
+    fullWidth: true,
+    placeholder: 'Ocupo todo el ancho disponible',
+  },
+};
+
+// ── Layout: Custom Width ─────────────────────────────────────
+
+export const CustomWidth: Story = {
+  args: {
+    width: '300px',
+    placeholder: 'Ancho fijo de 300px',
   },
 };
