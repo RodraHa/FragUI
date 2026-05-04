@@ -98,10 +98,9 @@ export interface SelectProps {
  * Soporta ref forwarding al trigger nativo para que Form pueda enfocar
  * programáticamente el primer campo inválido tras un submit fallido (§2.7).
  */
-export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
+export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
   (
     {
-      name,
       options = [],
       value,
       defaultValue = null,
@@ -147,22 +146,20 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
     const currentValue = isControlled ? value : internalValue;
 
     // ── Refs ────────────────────────────────────────────────────
-    const triggerRef = useRef<HTMLButtonElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     // Merge forwarded ref with internal ref
     const setTriggerRef = useCallback(
-      (node: HTMLButtonElement | null) => {
-        (
-          triggerRef as React.MutableRefObject<HTMLButtonElement | null>
-        ).current = node;
+      (node: HTMLDivElement | null) => {
+        (triggerRef as React.MutableRefObject<HTMLDivElement | null>).current =
+          node;
         if (typeof ref === 'function') {
           ref(node);
         } else if (ref) {
-          (ref as React.MutableRefObject<HTMLButtonElement | null>).current =
-            node;
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
         }
       },
       [ref],
@@ -188,7 +185,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
 
     // Connect floating-ui refs with our refs
     const setFloatingReference = useCallback(
-      (node: HTMLButtonElement | null) => {
+      (node: HTMLDivElement | null) => {
         setTriggerRef(node);
         refs.setReference(node);
       },
@@ -540,18 +537,16 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
     return (
       <>
         {/* ── Trigger ──────────────────────────────────────────── */}
-        <button
+        <div
           ref={setFloatingReference}
           data-component="select"
           data-size={size}
           data-status={status}
           {...(fullWidth ? { 'data-fullwidth': 'true' } : {})}
           {...(disabled ? { 'data-disabled': 'true' } : {})}
-          type="button"
           role="combobox"
           id={id}
-          name={name}
-          disabled={disabled}
+          tabIndex={disabled ? -1 : 0}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           aria-controls={isOpen ? listboxId : undefined}
@@ -588,7 +583,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           <span aria-hidden="true" style={getChevronStyle(isOpen)}>
             ▾
           </span>
-        </button>
+        </div>
 
         {/* ── Panel (dropdown) ─────────────────────────────────── */}
         {isOpen && (

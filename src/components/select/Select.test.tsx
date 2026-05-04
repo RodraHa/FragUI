@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
 import { describe, it, expect, vi } from 'vitest';
@@ -33,9 +33,9 @@ describe('Select', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
 
-    it('renders as a <button> element', () => {
+    it('renders as a <div> element', () => {
       render(<Select options={fruits} />);
-      expect(screen.getByRole('combobox').tagName).toBe('BUTTON');
+      expect(screen.getByRole('combobox').tagName).toBe('DIV');
     });
 
     it('renders default placeholder "Seleccionar..."', () => {
@@ -48,9 +48,9 @@ describe('Select', () => {
       expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     });
 
-    it('has type="button" to prevent form submission', () => {
+    it('has tabIndex="0" to be focusable', () => {
       render(<Select options={fruits} />);
-      expect(screen.getByRole('combobox')).toHaveAttribute('type', 'button');
+      expect(screen.getByRole('combobox')).toHaveAttribute('tabindex', '0');
     });
   });
 
@@ -208,9 +208,9 @@ describe('Select', () => {
       expect(screen.getByRole('combobox')).not.toBeDisabled();
     });
 
-    it('sets native disabled on the trigger when disabled={true}', () => {
+    it('sets tabIndex="-1" on the trigger when disabled={true}', () => {
       render(<Select options={fruits} disabled />);
-      expect(screen.getByRole('combobox')).toBeDisabled();
+      expect(screen.getByRole('combobox')).toHaveAttribute('tabindex', '-1');
     });
 
     it('trigger gets data-disabled="true"', () => {
@@ -485,7 +485,9 @@ describe('Select', () => {
     it('opens panel on Enter', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{Enter}');
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
@@ -493,7 +495,9 @@ describe('Select', () => {
     it('opens panel on Space', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard(' ');
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
@@ -501,7 +505,9 @@ describe('Select', () => {
     it('opens panel on ArrowDown when closed', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}');
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
@@ -509,7 +515,9 @@ describe('Select', () => {
     it('moves active option down with ArrowDown', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{ArrowDown}');
       // Active descendant should point to the first (then second) option
@@ -520,7 +528,9 @@ describe('Select', () => {
     it('moves active option up with ArrowUp', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}'); // opens + first active
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{ArrowDown}');
@@ -532,7 +542,9 @@ describe('Select', () => {
     it('jumps to first enabled option on Home', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{Home}');
@@ -544,7 +556,9 @@ describe('Select', () => {
     it('jumps to last enabled option on End', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{End}');
       const trigger = screen.getByRole('combobox');
@@ -556,7 +570,9 @@ describe('Select', () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
       render(<Select options={fruits} onChange={onChange} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{Enter}');
@@ -576,7 +592,9 @@ describe('Select', () => {
     it('closes panel on Tab', async () => {
       const user = userEvent.setup();
       render(<Select options={fruits} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}');
       expect(screen.getByRole('listbox')).toBeInTheDocument();
       await user.tab();
@@ -587,7 +605,9 @@ describe('Select', () => {
       const user = userEvent.setup();
       const onChange = vi.fn();
       render(<Select options={withDisabled} onChange={onChange} />);
-      screen.getByRole('combobox').focus();
+      act(() => {
+        screen.getByRole('combobox').focus();
+      });
       await user.keyboard('{ArrowDown}'); // opens, active = Alpha(0)
       await user.keyboard('{ArrowDown}'); // active -> Alpha(0)
       await user.keyboard('{ArrowDown}'); // skip Bravo(1), active -> Charlie(2)
@@ -601,15 +621,17 @@ describe('Select', () => {
   // -----------------------------------------------------------------------
   describe('Ref forwarding', () => {
     it('forwards ref to the trigger element', () => {
-      const ref = createRef<HTMLButtonElement>();
+      const ref = createRef<HTMLDivElement>();
       render(<Select ref={ref} options={fruits} />);
       expect(ref.current).toBe(screen.getByRole('combobox'));
     });
 
-    it('ref can be used to programmatically focus the trigger', () => {
-      const ref = createRef<HTMLButtonElement>();
+    it('ref can be used to programmatically focus the trigger', async () => {
+      const ref = createRef<HTMLDivElement>();
       render(<Select ref={ref} options={fruits} />);
-      ref.current?.focus();
+      await act(async () => {
+        ref.current?.focus();
+      });
       expect(ref.current).toHaveFocus();
     });
   });
@@ -647,9 +669,9 @@ describe('Select', () => {
       );
     });
 
-    it('applies name attribute to the trigger', () => {
+    it('does not apply name attribute to the div trigger (not supported)', () => {
       render(<Select options={fruits} name="role" />);
-      expect(screen.getByRole('combobox')).toHaveAttribute('name', 'role');
+      expect(screen.getByRole('combobox')).not.toHaveAttribute('name');
     });
 
     it('sets aria-expanded="false" when closed', () => {

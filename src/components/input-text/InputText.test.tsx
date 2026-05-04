@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
 import { describe, it, expect, vi } from 'vitest';
@@ -410,10 +410,12 @@ describe('InputText', () => {
       expect(ref.current).toBe(container.querySelector('input'));
     });
 
-    it('ref can be used to programmatically focus the input', () => {
+    it('ref can be used to programmatically focus the input', async () => {
       const ref = createRef<HTMLInputElement>();
       render(<InputText ref={ref} />);
-      ref.current?.focus();
+      await act(async () => {
+        ref.current?.focus();
+      });
       expect(ref.current).toHaveFocus();
     });
   });
