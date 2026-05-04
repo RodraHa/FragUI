@@ -7,6 +7,7 @@ import {
   autoUpdate,
 } from '@floating-ui/react';
 import type { Size, FormStatus } from '../../types';
+import { useFieldContext } from '../../contexts';
 import {
   getTriggerStyle,
   getTriggerTextStyle,
@@ -105,13 +106,13 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
       value,
       defaultValue = null,
       placeholder = 'Seleccionar...',
-      size = 'md',
-      status = 'idle',
+      size: sizeProp,
+      status: statusProp,
       fullWidth = true,
       width,
       searchable = false,
       clearable = false,
-      disabled = false,
+      disabled: disabledProp = false,
       loading = false,
       emptyText = 'Sin resultados',
       onChange,
@@ -119,15 +120,38 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
       onBlur,
       onFocus,
       style,
-      id,
-      'aria-invalid': ariaInvalid,
-      'aria-required': ariaRequired,
-      'aria-describedby': ariaDescribedBy,
+      id: idProp,
+      name: nameProp,
+      'aria-invalid': ariaInvalidProp,
+      'aria-required': ariaRequiredProp,
+      'aria-describedby': ariaDescribedByProp,
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
     },
     ref,
   ) => {
+    // ── FieldContext integration (§2.6) ─────────────────────────────
+    // Direct props win over context, except `disabled` which always
+    // OR-merges (ancestor wins, §2.4).
+    const fieldCtx = useFieldContext();
+
+    const size: Size = sizeProp ?? fieldCtx?.size ?? 'md';
+    const status: FormStatus = statusProp ?? fieldCtx?.status ?? 'idle';
+    // Ancestor disabled always wins — no child can re-enable (§2.4)
+    const disabled = (fieldCtx?.disabled ?? false) || disabledProp;
+    const name = nameProp ?? fieldCtx?.name;
+    const id = idProp ?? fieldCtx?.inputId;
+    const ariaDescribedBy = ariaDescribedByProp ?? fieldCtx?.describedById;
+    const ariaInvalid =
+      ariaInvalidProp ??
+      (status === 'error'
+        ? ('true' as React.AriaAttributes['aria-invalid'])
+        : undefined);
+    const ariaRequired =
+      ariaRequiredProp ??
+      (fieldCtx?.required
+        ? ('true' as React.AriaAttributes['aria-required'])
+        : undefined);
     // ── Unique IDs ──────────────────────────────────────────────
     const uid = useId();
     const listboxId = `select-listbox-${uid}`;
@@ -542,6 +566,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
           data-component="select"
           data-size={size}
           data-status={status}
+          data-name={name}
           {...(fullWidth ? { 'data-fullwidth': 'true' } : {})}
           {...(disabled ? { 'data-disabled': 'true' } : {})}
           role="combobox"

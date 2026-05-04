@@ -44,9 +44,9 @@ const meta = {
         component:
           'Control de selección única con opciones estáticas. No gestiona label, ' +
           'error ni estado visual — esa responsabilidad pertenece al componente ' +
-          '`Field` (próximamente). Soporta búsqueda local, limpieza de valor, ' +
+          '`Field`. Soporta búsqueda local, limpieza de valor, ' +
           'opciones agrupadas, estado de carga y ref forwarding al trigger ' +
-          'nativo (spec §2.7).',
+          'nativo.',
       },
     },
   },
@@ -63,14 +63,14 @@ const meta = {
       control: 'select',
       options: ['sm', 'md', 'lg'],
       description:
-        'Tamaño visual del control. Alineado con InputText y Button (spec §2.2).',
+        'Tamaño visual del control. Alineado con InputText y Button.',
       table: { category: 'Apariencia', defaultValue: { summary: 'md' } },
     },
     status: {
       control: 'select',
       options: ['idle', 'success', 'warning', 'error'],
       description:
-        'Estado visual del campo. En V2 será provisto por FieldContext.',
+        'Estado visual del campo. Se hereda automáticamente desde FieldContext.',
       table: { category: 'Apariencia', defaultValue: { summary: 'idle' } },
     },
     placeholder: {
@@ -140,7 +140,7 @@ export const Sizes: Story = {
       description: {
         story:
           'Los tres tamaños son idénticos a InputText, garantizando ' +
-          'alineación perfecta en layouts mixtos (spec §2.2).',
+          'alineación perfecta en layouts mixtos.',
       },
     },
   },
@@ -167,7 +167,7 @@ export const Statuses: Story = {
       description: {
         story:
           'Estado visual del campo. En producción, `error` lo provee `Field` ' +
-          'automáticamente desde `FormContext` (spec §2.1).',
+          'automáticamente desde `FormContext`.',
       },
     },
   },
