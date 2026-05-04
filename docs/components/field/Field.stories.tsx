@@ -15,7 +15,7 @@ const meta = {
           '(etiqueta, ayuda, error) y conecta con `FormContext` (próximamente) para leer ' +
           'errores y estado de validación de forma automática. Provee un `FieldContext` que ' +
           'los controles hijos (`InputText`, `Select`) consumen para heredar `size`, `status`, ' +
-          '`disabled`, `name` y atributos ARIA de accesibilidad (spec §3).',
+          '`disabled`, `name` y atributos ARIA de accesibilidad.',
       },
     },
   },

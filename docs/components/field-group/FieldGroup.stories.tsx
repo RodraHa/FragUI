@@ -15,7 +15,7 @@ const meta = {
         component:
           'Agrupa componentes `Field` bajo una sección con título opcional y controla el layout interno ' +
           '(grid CSS). Provee semántica HTML nativa (`<fieldset>` y `<legend>`) cuando tiene título, ' +
-          'soporta colapso/expansión, y propaga el estado `disabled` a todos sus descendientes (§4).',
+          'soporta colapso/expansión, y propaga el estado `disabled` a todos sus descendientes.',
       },
     },
   },
@@ -72,7 +72,7 @@ const meta = {
     },
     disabled: {
       control: 'boolean',
-      description: 'Deshabilita todos los `Field` descendientes (regla §2.4: ancestro gana).',
+      description: 'Deshabilita todos los `Field` descendientes (regla de herencia en cascada: ancestro gana).',
       table: { category: 'Estado', defaultValue: { summary: 'false' } },
     },
   },
@@ -194,7 +194,7 @@ export const DisabledCascade: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Según la regla §2.4, si un `FieldGroup` está deshabilitado, todos los campos internos quedan deshabilitados de forma inmutable.',
+        story: 'Por regla de herencia en cascada, si un `FieldGroup` está deshabilitado, todos los campos internos quedan deshabilitados de forma inmutable.',
       },
     },
   },

@@ -11,9 +11,9 @@ const meta = {
         component:
           'Control de entrada de texto de una sola línea. No gestiona label, ' +
           'error ni estado visual — esa responsabilidad pertenece al componente ' +
-          '`Field` (próximamente). Soporta modos controlado y no controlado, ' +
+          '`Field`. Soporta modos controlado y no controlado, ' +
           'limpieza de valor, contador de caracteres, afijos decorativos y ' +
-          'ref forwarding al elemento `<input>` nativo (spec §2.7).',
+          'ref forwarding al elemento `<input>` nativo.',
       },
     },
   },
@@ -32,7 +32,7 @@ const meta = {
       options: ['sm', 'md', 'lg'],
       description:
         'Tamaño visual del control. Controla altura, padding y tipografía. ' +
-        'Alineado con los tamaños de Button para compatibilidad en layouts mixtos (spec §2.2).',
+        'Alineado con los tamaños de Button para compatibilidad en layouts mixtos.',
       table: {
         category: 'Apariencia',
         defaultValue: { summary: 'md' },
@@ -42,8 +42,8 @@ const meta = {
       control: 'select',
       options: ['idle', 'success', 'warning', 'error'],
       description:
-        'Estado visual del campo. En V1 se pasa directamente; en V2 será ' +
-        'provisto por FieldContext. Afecta el color del borde y el focus ring.',
+        'Estado visual del campo. Se hereda automáticamente desde `FieldContext`. ' +
+        'Afecta el color del borde y el focus ring.',
       table: {
         category: 'Apariencia',
         defaultValue: { summary: 'idle' },
@@ -90,7 +90,7 @@ const meta = {
       control: 'boolean',
       description:
         'Deshabilita el control. En un árbol Field→Form, se hereda en cascada ' +
-        'desde el ancestro (spec §2.4) y no puede ser re-habilitado por el control hijo.',
+        'desde el ancestro y no puede ser re-habilitado por el control hijo.',
       table: {
         category: 'Estado',
         defaultValue: { summary: 'false' },
@@ -218,7 +218,7 @@ export const Sizes: Story = {
       description: {
         story:
           'Los tres tamaños mantienen proporciones consistentes con Button, ' +
-          'permitiendo alineación vertical en layouts mixtos (spec §2.2).',
+          'permitiendo alineación vertical en layouts mixtos.',
       },
     },
   },
@@ -240,7 +240,7 @@ export const Statuses: Story = {
         story:
           'Estado visual del campo. En producción, `error` lo provee `Field` ' +
           'automáticamente desde `FormContext`. `success` y `warning` son ' +
-          'estados manuales para feedback enriquecido (spec §2.1).',
+          'estados manuales para feedback enriquecido.',
       },
     },
   },
@@ -319,7 +319,7 @@ export const Clearable: Story = {
         story:
           'El botón de limpieza aparece solo cuando el campo tiene valor y ' +
           'no está deshabilitado ni en readOnly. Tiene aria-label para ' +
-          'lectores de pantalla (spec §5).',
+          'lectores de pantalla.',
       },
     },
   },
@@ -368,7 +368,7 @@ export const Disabled: Story = {
         story:
           'El estado deshabilitado reduce la opacidad, cambia el fondo y el cursor. ' +
           'En un árbol Form→Field, este estado se hereda en cascada y no puede ' +
-          'ser sobreescrito por el control hijo (spec §2.4).',
+          'ser sobreescrito por el control hijo.',
       },
     },
   },
