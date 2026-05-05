@@ -698,7 +698,9 @@ describe('useForm registry', () => {
     const { result } = renderHook(() => useForm('test-form-2'));
     expect(result.current).toBe(mockApi);
 
-    unregisterForm('test-form-2');
+    act(() => {
+      unregisterForm('test-form-2');
+    });
   });
 
   it('reacts dynamically to registration and unregistration', () => {
