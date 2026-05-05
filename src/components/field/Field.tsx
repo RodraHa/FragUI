@@ -2,14 +2,13 @@ import React, { useId } from 'react';
 import type { Size, FormStatus } from '../../types';
 import { FieldContext } from '../../contexts/FieldContext';
 import { useFieldGroupContext } from '../../contexts/FieldGroupContext';
+import { useFormContext } from '../../contexts/FormContext';
 import {
   getFieldWrapperStyle,
   getLabelStyle,
   requiredIndicatorStyle,
   getSubTextStyle,
 } from './Field.styles';
-
-// TODO (Form sprint): import { useFormContext } from '../../contexts/FormContext';
 
 export interface FieldProps {
   /**
@@ -95,26 +94,39 @@ export const Field: React.FC<FieldProps> = ({
   validateOn = null,
   children,
 }) => {
-  // TODO (Form sprint): const formCtx = useFormContext();
-  // TODO (Form sprint): auto-derive errorText from formCtx?.errors[name] when touched
-  // TODO (Form sprint): auto-derive status === 'error' when formCtx has errors[name] + touched[name]
-  // TODO (Form sprint): merge disabled with formCtx?.disabled
+  // ── FormContext integration ────────────────────────────────────
+  const formCtx = useFormContext();
 
-  // ── Disabled: OR-merge with FieldGroupContext (§2.4: ancestor wins) ──
+  // Auto-derive error from FormContext.
+  // When validateOn is 'change', show errors immediately (no need to wait for
+  // touched). For 'blur' and 'submit', require the field to have been touched.
+  // Explicit `errorText` prop always wins over form-derived error.
+  const effectiveValidateOn = validateOn ?? formCtx?.validateOn ?? 'submit';
+  const shouldShowFormError =
+    formCtx != null &&
+    formCtx.errors[name] != null &&
+    (effectiveValidateOn === 'change' || formCtx.touched[name]);
+  const formError = shouldShowFormError
+    ? (formCtx!.errors[name] ?? null)
+    : null;
+  const resolvedErrorText = errorText ?? formError;
+
+  // ── Disabled: OR-merge with Form + FieldGroup + prop (§2.4: ancestor wins) ──
   const groupCtx = useFieldGroupContext();
-  const effectiveDisabled = groupCtx?.disabled || disabled;
+  const effectiveDisabled =
+    (formCtx?.disabled ?? false) || (groupCtx?.disabled ?? false) || disabled;
 
   // ── Stable IDs (React 18+: useId generates hydration-safe IDs) ───────
   const uid = useId();
   const inputId = `field-${name}-input-${uid}`;
   const describedById = `field-${name}-desc-${uid}`;
 
-  // ── Effective status: errorText (even manual) → 'error' display ───────
-  const hasError = !!errorText || status === 'error';
+  // ── Effective status: resolvedErrorText (manual or form-derived) → 'error' ──
+  const hasError = !!resolvedErrorText || status === 'error';
   const effectiveStatus: FormStatus = hasError ? 'error' : status;
 
   // ── Sub-text: error takes priority over helper (§3 accessibility) ─────
-  const subText = errorText ?? helperText;
+  const subText = resolvedErrorText ?? helperText;
   const showSubText = !!subText;
 
   // ── Context value provided to children ────────────────────────────────

@@ -1,5 +1,6 @@
 import React, { useId, useState } from 'react';
 import { FieldGroupContext, useFieldGroupContext } from '../../contexts';
+import { useFormContext } from '../../contexts/FormContext';
 import {
   getFieldsetStyle,
   legendResetStyle,
@@ -10,8 +11,6 @@ import {
   getHeaderStyle,
   getContentGridStyle,
 } from './FieldGroup.styles';
-
-// TODO (Form sprint): import { useFormContext } from '../../contexts/FormContext';
 
 export interface FieldGroupProps {
   /**
@@ -93,13 +92,13 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
   onCollapsedChange,
   children,
 }) => {
-  // TODO (Form sprint): const formCtx = useFormContext();
-  // TODO (Form sprint): const effectiveDisabled = formCtx?.disabled || parentGroupCtx?.disabled || disabled;
-
-  // OR-merge with parent FieldGroupContext so nested FieldGroups also
-  // inherit the ancestor's disabled state (§2.4: ancestor always wins).
+  // ── FormContext + parent FieldGroupContext disabled cascade (§2.4) ──
+  const formCtx = useFormContext();
   const parentGroupCtx = useFieldGroupContext();
-  const effectiveDisabled = (parentGroupCtx?.disabled ?? false) || disabled;
+  const effectiveDisabled =
+    (formCtx?.disabled ?? false) ||
+    (parentGroupCtx?.disabled ?? false) ||
+    disabled;
 
   // ── Stable IDs ─────────────────────────────────────────────────────────
   const uid = useId();

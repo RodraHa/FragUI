@@ -45,8 +45,19 @@ export type { FieldProps } from './components/field';
 export { FieldGroup } from './components/field-group';
 export type { FieldGroupProps } from './components/field-group';
 
-// Contexts — exported for advanced consumers and future Form integration
+export { Form } from './components/form';
+export type { FormProps } from './components/form';
+
+// Contexts — exported for advanced consumers
 export { useFieldContext, FieldContext } from './contexts';
 export type { FieldContextValue } from './contexts';
 export { useFieldGroupContext, FieldGroupContext } from './contexts';
 export type { FieldGroupContextValue } from './contexts';
+export { useFormContext, FormContext } from './contexts';
+export type { FormContextValue } from './contexts';
+
+// Hooks
+export { useForm } from './hooks';
+
+// Types — form system
+export type { ValidateOn, ValidationRule, FormApi } from './types';

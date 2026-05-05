@@ -112,6 +112,7 @@ export function getHeaderStyle(hasContent: boolean): CSSProperties {
   return {
     display: hasContent ? 'block' : 'none',
     marginBottom: hasContent ? '0.75rem' : 0,
+    clear: 'both',
   };
 }
 
