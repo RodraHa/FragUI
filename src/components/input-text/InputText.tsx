@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FocusEvent } from 'react';
 import type { Size, FormStatus } from '../../types';
 import { useFieldContext } from '../../contexts';
+import { useFormContext } from '../../contexts/FormContext';
 import {
   getContainerStyle,
   getInputStyle,
@@ -106,6 +107,7 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     // Direct props win over context, except `disabled` which always
     // OR-merges (ancestor wins, §2.4).
     const fieldCtx = useFieldContext();
+    const formCtx = useFormContext();
 
     const size: Size = sizeProp ?? fieldCtx?.size ?? 'md';
     const status: FormStatus = statusProp ?? fieldCtx?.status ?? 'idle';
@@ -147,9 +149,19 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     };
 
     // Uncontrolled internal value (only used when value prop is absent)
+    // When inside a Form, the form context value acts as the controlled source.
     const isControlled = value !== undefined;
+    const formValue =
+      formCtx && name && !isControlled
+        ? (formCtx.values[name] as string | undefined)
+        : undefined;
+    const isFormControlled = formValue !== undefined;
     const [internalValue, setInternalValue] = useState(defaultValue);
-    const currentValue = isControlled ? value : internalValue;
+    const currentValue = isControlled
+      ? value
+      : isFormControlled
+        ? (formValue ?? '')
+        : internalValue;
 
     // Clear button: only when clearable, has value, not disabled/readOnly
     const showClearButton =
@@ -163,6 +175,7 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
       if (!isControlled) {
         setInternalValue(newValue);
       }
+      if (formCtx && name) formCtx.setValue(name, newValue);
       onChange?.(newValue, e);
     };
 
@@ -173,6 +186,7 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
 
     const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
       setIsFocused(false);
+      if (formCtx && name) formCtx.setTouched(name);
       onBlur?.(e);
     };
 
@@ -191,9 +205,18 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
       if (!isControlled) {
         setInternalValue('');
       }
+      if (formCtx && name) formCtx.setValue(name, '');
       onChange?.('', e as unknown as ChangeEvent<HTMLInputElement>);
       onClear?.();
     };
+
+    // ── Register ref with FormContext for focus-on-error (§7) ────
+    useEffect(() => {
+      if (formCtx && name) {
+        formCtx.registerRef(name, inputRef);
+        return () => formCtx.unregisterRef(name);
+      }
+    }, [formCtx, name]);
 
     const containerStyle = {
       ...getContainerStyle(
@@ -246,8 +269,10 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
           aria-invalid={resolvedAriaInvalid}
           aria-required={resolvedAriaRequired}
           aria-describedby={resolvedDescribedBy}
-          value={isControlled ? value : undefined}
-          defaultValue={isControlled ? undefined : defaultValue}
+          value={isControlled || isFormControlled ? currentValue : undefined}
+          defaultValue={
+            isControlled || isFormControlled ? undefined : defaultValue
+          }
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}

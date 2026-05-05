@@ -8,6 +8,7 @@ import {
 } from '@floating-ui/react';
 import type { Size, FormStatus } from '../../types';
 import { useFieldContext } from '../../contexts';
+import { useFormContext } from '../../contexts/FormContext';
 import {
   getTriggerStyle,
   getTriggerTextStyle,
@@ -134,6 +135,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
     // Direct props win over context, except `disabled` which always
     // OR-merges (ancestor wins, §2.4).
     const fieldCtx = useFieldContext();
+    const formCtx = useFormContext();
 
     const size: Size = sizeProp ?? fieldCtx?.size ?? 'md';
     const status: FormStatus = statusProp ?? fieldCtx?.status ?? 'idle';
@@ -306,12 +308,13 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         if (!isControlled) {
           setInternalValue(opt.value);
         }
+        if (formCtx && name) formCtx.setValue(name, opt.value);
         onChange?.(opt.value);
         closePanel();
         // Return focus to trigger
         triggerRef.current?.focus();
       },
-      [isControlled, onChange, closePanel],
+      [isControlled, onChange, closePanel, formCtx, name],
     );
 
     // ── Clear ───────────────────────────────────────────────────
@@ -321,10 +324,11 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         if (!isControlled) {
           setInternalValue(null);
         }
+        if (formCtx && name) formCtx.setValue(name, null);
         onChange?.(null);
         triggerRef.current?.focus();
       },
-      [isControlled, onChange],
+      [isControlled, onChange, formCtx, name],
     );
 
     // ── Click outside to close ──────────────────────────────────
@@ -531,8 +535,17 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         return;
       }
       setIsFocused(false);
+      if (formCtx && name) formCtx.setTouched(name);
       onBlur?.(e);
     };
+
+    // ── Register ref with FormContext for focus-on-error (§7) ────
+    useEffect(() => {
+      if (formCtx && name) {
+        formCtx.registerRef(name, triggerRef);
+        return () => formCtx.unregisterRef(name);
+      }
+    }, [formCtx, name]);
 
     // ── Derived values ──────────────────────────────────────────
     const selectedOption = options.find((opt) => opt.value === currentValue);

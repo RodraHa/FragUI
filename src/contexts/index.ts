@@ -3,3 +3,6 @@ export type { FieldContextValue } from './FieldContext';
 
 export { FieldGroupContext, useFieldGroupContext } from './FieldGroupContext';
 export type { FieldGroupContextValue } from './FieldGroupContext';
+
+export { FormContext, useFormContext } from './FormContext';
+export type { FormContextValue } from './FormContext';
