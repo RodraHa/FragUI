@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  act,
+  waitFor,
+  renderHook,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -8,7 +14,9 @@ import { Field } from '../field';
 import { FieldGroup } from '../field-group';
 import { InputText } from '../input-text';
 import { Select } from '../select';
-import type { FormApi } from '../../types/form';
+import { validateField, validateAllFields } from './validation';
+import { useForm, registerForm, unregisterForm } from '../../hooks/useForm';
+import type { FormApi, ValidationRule } from '../../types/form';
 
 /* ─── Helpers ──────────────────────────────────────────────────── */
 
@@ -521,6 +529,211 @@ describe('Form', () => {
       renderForm();
       const form = document.querySelector('[data-component="form"]');
       expect(form).not.toHaveAttribute('data-disabled');
+    });
+  });
+});
+
+describe('validation', () => {
+  describe('validateField', () => {
+    // Required
+    it('validates required', async () => {
+      const rules: ValidationRule[] = [{ required: true }];
+      expect(await validateField('', rules)).toBe('Este campo es obligatorio');
+      expect(await validateField(null, rules)).toBe(
+        'Este campo es obligatorio',
+      );
+      expect(await validateField('text', rules)).toBeNull();
+    });
+
+    // MinLength
+    it('validates minLength', async () => {
+      const rules: ValidationRule[] = [{ minLength: 5 }];
+      expect(await validateField('1234', rules)).toBe('Mínimo 5 caracteres');
+      expect(await validateField('12345', rules)).toBeNull();
+      // Ignore if not string
+      expect(await validateField(1234, rules)).toBeNull();
+    });
+
+    // MaxLength
+    it('validates maxLength', async () => {
+      const rules: ValidationRule[] = [{ maxLength: 3 }];
+      expect(await validateField('1234', rules)).toBe('Máximo 3 caracteres');
+      expect(await validateField('123', rules)).toBeNull();
+      // Ignore if not string
+      expect(await validateField(1234, rules)).toBeNull();
+    });
+
+    // Min (numeric)
+    it('validates min numeric', async () => {
+      const rules: ValidationRule[] = [{ min: 10 }];
+      expect(await validateField(9, rules)).toBe('El valor mínimo es 10');
+      expect(await validateField('9', rules)).toBe('El valor mínimo es 10');
+      expect(await validateField(10, rules)).toBeNull();
+      expect(await validateField('11', rules)).toBeNull();
+      // Ignore if not numeric
+      expect(await validateField('abc', rules)).toBeNull();
+    });
+
+    // Max (numeric)
+    it('validates max numeric', async () => {
+      const rules: ValidationRule[] = [{ max: 5 }];
+      expect(await validateField(6, rules)).toBe('El valor máximo es 5');
+      expect(await validateField('6', rules)).toBe('El valor máximo es 5');
+      expect(await validateField(5, rules)).toBeNull();
+      expect(await validateField('4', rules)).toBeNull();
+      // Ignore if not numeric
+      expect(await validateField('abc', rules)).toBeNull();
+    });
+
+    // Pattern (string presets)
+    it('validates pattern presets (email)', async () => {
+      const rules: ValidationRule[] = [{ pattern: 'email' }];
+      expect(await validateField('not-an-email', rules)).toBe(
+        'Formato inválido',
+      );
+      expect(await validateField('test@example.com', rules)).toBeNull();
+    });
+
+    it('validates pattern presets (url)', async () => {
+      const rules: ValidationRule[] = [{ pattern: 'url' }];
+      expect(await validateField('not-a-url', rules)).toBe('Formato inválido');
+      expect(await validateField('https://google.com', rules)).toBeNull();
+    });
+
+    it('validates pattern presets (tel)', async () => {
+      const rules: ValidationRule[] = [{ pattern: 'tel' }];
+      expect(await validateField('123', rules)).toBe('Formato inválido');
+      expect(await validateField('+1234567890', rules)).toBeNull();
+    });
+
+    // Pattern (RegExp)
+    it('validates custom RegExp pattern', async () => {
+      const rules: ValidationRule[] = [{ pattern: /^[A-Z]+$/ }];
+      expect(await validateField('abc', rules)).toBe('Formato inválido');
+      expect(await validateField('ABC', rules)).toBeNull();
+    });
+
+    // Custom messages
+    it('respects custom messages', async () => {
+      expect(
+        await validateField('', [{ required: true, message: 'Custom req' }]),
+      ).toBe('Custom req');
+      expect(
+        await validateField('a', [{ minLength: 3, message: 'Custom minL' }]),
+      ).toBe('Custom minL');
+      expect(
+        await validateField('abcd', [{ maxLength: 3, message: 'Custom maxL' }]),
+      ).toBe('Custom maxL');
+      expect(await validateField(5, [{ min: 10, message: 'Custom min' }])).toBe(
+        'Custom min',
+      );
+      expect(await validateField(10, [{ max: 5, message: 'Custom max' }])).toBe(
+        'Custom max',
+      );
+      expect(
+        await validateField('not-email', [
+          { pattern: 'email', message: 'Custom email' },
+        ]),
+      ).toBe('Custom email');
+    });
+
+    // Custom validate function
+    it('validates using custom function', async () => {
+      const rules: ValidationRule[] = [
+        {
+          validate: (val: unknown) =>
+            val === 'invalid' ? 'Custom error' : null,
+        },
+      ];
+      expect(await validateField('invalid', rules)).toBe('Custom error');
+      expect(await validateField('valid', rules)).toBeNull();
+    });
+  });
+
+  describe('validateAllFields', () => {
+    it('validates all fields and returns an object of errors', async () => {
+      const values = {
+        name: 'a',
+        age: 15,
+        email: 'invalid',
+      };
+      const rules: Record<string, ValidationRule[]> = {
+        name: [{ minLength: 3, message: 'Name too short' }],
+        age: [{ min: 18, message: 'Must be 18' }],
+        email: [{ pattern: 'email', message: 'Invalid email' }],
+        missing: [{ required: true, message: 'Required' }],
+      };
+
+      const result = await validateAllFields(values, rules);
+      expect(result).toEqual({
+        name: 'Name too short',
+        age: 'Must be 18',
+        email: 'Invalid email',
+        missing: 'Required',
+      });
+    });
+
+    it('returns null for valid fields', async () => {
+      const values = { name: 'abc' };
+      const rules: Record<string, ValidationRule[]> = {
+        name: [{ minLength: 3 }],
+      };
+
+      const result = await validateAllFields(values, rules);
+      expect(result).toEqual({ name: null });
+    });
+  });
+});
+
+describe('useForm registry', () => {
+  it('returns null if the form is not registered', () => {
+    const { result } = renderHook(() => useForm('test-form-1'));
+    expect(result.current).toBeNull();
+  });
+
+  it('returns FormApi when registered before hook call', () => {
+    const mockApi = { values: { a: 1 } } as unknown as FormApi;
+    registerForm('test-form-2', mockApi);
+
+    const { result } = renderHook(() => useForm('test-form-2'));
+    expect(result.current).toBe(mockApi);
+
+    unregisterForm('test-form-2');
+  });
+
+  it('reacts dynamically to registration and unregistration', () => {
+    const { result, unmount } = renderHook(() => useForm('dynamic-form'));
+    expect(result.current).toBeNull();
+
+    const mockApi = { values: { b: 2 } } as unknown as FormApi;
+
+    act(() => {
+      registerForm('dynamic-form', mockApi);
+    });
+    expect(result.current).toBe(mockApi);
+
+    act(() => {
+      unregisterForm('dynamic-form');
+    });
+    expect(result.current).toBeNull();
+
+    // Verify unsubscription logic indirectly by unmounting
+    unmount();
+  });
+
+  it('does not react to unrelated form changes', () => {
+    const { result } = renderHook(() => useForm('form-A'));
+    expect(result.current).toBeNull();
+
+    const mockApiB = { values: { x: 9 } } as unknown as FormApi;
+
+    act(() => {
+      registerForm('form-B', mockApiB);
+    });
+    expect(result.current).toBeNull(); // form-A should still be null
+
+    act(() => {
+      unregisterForm('form-B');
     });
   });
 });
