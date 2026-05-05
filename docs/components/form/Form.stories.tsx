@@ -5,6 +5,7 @@ import { Field } from '../../../src/components/field/Field';
 import { FieldGroup } from '../../../src/components/field-group/FieldGroup';
 import { InputText } from '../../../src/components/input-text/InputText';
 import { Select } from '../../../src/components/select/Select';
+import { Button } from '../../../src/components/button/Button';
 import type { FormApi } from '../../../src/types/form';
 
 /* ─── Shared options ────────────────────────────────────────────── */
@@ -134,9 +135,11 @@ export const Default: Story = {
       <Field name="email" label="Correo electrónico">
         <InputText type="email" placeholder="correo@ejemplo.com" />
       </Field>
-      <button type="submit" style={{ alignSelf: 'flex-start' }}>
-        Enviar
-      </button>
+      <div style={{ alignSelf: 'flex-start' }}>
+        <Button type="submit" size="sm">
+          Enviar
+        </Button>
+      </div>
     </Form>
   ),
 };
@@ -184,9 +187,11 @@ export const ValidationOnSubmit: Story = {
           <Select options={roleOptions} placeholder="Selecciona un rol" />
         </Field>
       </FieldGroup>
-      <button type="submit" style={{ alignSelf: 'flex-start' }}>
-        Crear usuario
-      </button>
+      <div style={{ alignSelf: 'flex-start' }}>
+        <Button type="submit" size="sm">
+          Crear usuario
+        </Button>
+      </div>
     </Form>
   ),
 };
@@ -222,9 +227,11 @@ export const ValidationOnBlur: Story = {
           placeholder="Escribe y presiona Tab para ver el error"
         />
       </Field>
-      <button type="submit" style={{ alignSelf: 'flex-start' }}>
-        Continuar
-      </button>
+      <div style={{ alignSelf: 'flex-start' }}>
+        <Button type="submit" size="sm">
+          Continuar
+        </Button>
+      </div>
     </Form>
   ),
 };
@@ -266,9 +273,11 @@ export const ValidationOnChange: Story = {
           maxLength={20}
         />
       </Field>
-      <button type="submit" style={{ alignSelf: 'flex-start' }}>
-        Registrar
-      </button>
+      <div style={{ alignSelf: 'flex-start' }}>
+        <Button type="submit" size="sm">
+          Registrar
+        </Button>
+      </div>
     </Form>
   ),
 };
@@ -301,9 +310,11 @@ export const Disabled: Story = {
           <Select options={roleOptions} />
         </Field>
       </FieldGroup>
-      <button type="submit" disabled style={{ alignSelf: 'flex-start' }}>
-        Procesando…
-      </button>
+      <div style={{ alignSelf: 'flex-start' }}>
+        <Button type="submit" size="sm" disabled>
+          Procesando…
+        </Button>
+      </div>
     </Form>
   ),
 };
@@ -343,9 +354,11 @@ export const FormApiViaRef: Story = {
           <Field name="email" label="Correo electrónico" required>
             <InputText type="email" placeholder="correo@ejemplo.com" />
           </Field>
-          <button type="submit" style={{ alignSelf: 'flex-start' }}>
-            Submit nativo
-          </button>
+          <div style={{ alignSelf: 'flex-start' }}>
+            <Button type="submit" size="sm">
+              Submit nativo
+            </Button>
+          </div>
         </Form>
 
         {/* Controles externos vía FormApi */}
@@ -358,34 +371,37 @@ export const FormApiViaRef: Story = {
             borderTop: '1px solid #e5e5e5',
           }}
         >
-          <button
-            type="button"
+          <Button
+            variant="outlined"
+            size="sm"
             onClick={() =>
               ref.current?.setValue('fullName', 'María García')
             }
           >
             setValue('fullName')
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="outlined"
+            size="sm"
             onClick={() =>
               ref.current?.setError('email', 'Este correo ya está en uso')
             }
           >
             setError('email')
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="outlined"
+            size="sm"
             onClick={() => ref.current?.clearError('email')}
           >
             clearError('email')
-          </button>
-          <button type="button" onClick={() => ref.current?.reset()}>
+          </Button>
+          <Button variant="outlined" size="sm" onClick={() => ref.current?.reset()}>
             reset()
-          </button>
-          <button type="button" onClick={() => ref.current?.submit()}>
+          </Button>
+          <Button variant="outlined" size="sm" onClick={() => ref.current?.submit()}>
             submit() programático
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -439,9 +455,11 @@ export const AsyncSubmitWithFeedback: Story = {
           <Field name="email" label="Correo electrónico" required>
             <InputText type="email" placeholder="correo@ejemplo.com" />
           </Field>
-          <button type="submit" style={{ alignSelf: 'flex-start' }}>
-            {status === 'loading' ? 'Enviando…' : 'Enviar'}
-          </button>
+          <div style={{ alignSelf: 'flex-start' }}>
+            <Button type="submit" size="sm" loading={status === 'loading'} loadingText="Enviando…">
+              Enviar
+            </Button>
+          </div>
         </Form>
 
         {status === 'success' && (
@@ -500,9 +518,11 @@ export const BackendErrorInjection: Story = {
       <p style={{ margin: 0, fontSize: '0.8rem', color: '#737373' }}>
         Enviar simula una respuesta del backend con error de campo.
       </p>
-      <button type="submit" style={{ alignSelf: 'flex-start' }}>
-        Registrar
-      </button>
+      <div style={{ alignSelf: 'flex-start' }}>
+        <Button type="submit" size="sm">
+          Registrar
+        </Button>
+      </div>
     </Form>
   ),
 };
@@ -554,9 +574,11 @@ export const ResetOnSuccess: Story = {
               <InputText type="number" placeholder="1" />
             </Field>
           </FieldGroup>
-          <button type="submit" style={{ alignSelf: 'flex-start' }}>
-            Agregar ítem
-          </button>
+          <div style={{ alignSelf: 'flex-start' }}>
+            <Button type="submit" size="sm">
+              Agregar ítem
+            </Button>
+          </div>
         </Form>
 
         {log.length > 0 && (
@@ -657,9 +679,11 @@ export const CreateUserForm: Story = {
         Prueba con <strong>admin@fragui.dev</strong> para ver el error de campo desde backend.
       </p>
 
-      <button type="submit" style={{ alignSelf: 'flex-start' }}>
-        Crear usuario
-      </button>
+      <div style={{ alignSelf: 'flex-start' }}>
+        <Button type="submit" size="sm">
+          Crear usuario
+        </Button>
+      </div>
     </Form>
   ),
 };
