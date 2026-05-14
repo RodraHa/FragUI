@@ -750,8 +750,8 @@ export const JsonServerIntegration: Story = {
                   'email',
                   'Este correo ya está registrado en el sistema',
                 );
-                setStatus('idle');
-                return;
+                // Debe lanzar para que Form no ejecute resetOnSuccess
+                throw new Error('DUPLICATE_EMAIL');
               }
 
               // 2. Enviar datos al servidor (POST)
@@ -773,12 +773,21 @@ export const JsonServerIntegration: Story = {
                 `Usuario #${created.id} registrado exitosamente.`,
               );
             } catch (err) {
-              setStatus('error');
-              setFeedback(
-                err instanceof Error
-                  ? err.message
-                  : 'Error inesperado al conectar con el servidor.',
-              );
+              // Duplicidad ya inyectó el error en el campo — solo volver a idle
+              const isDuplicate =
+                err instanceof Error &&
+                err.message === 'DUPLICATE_EMAIL';
+
+              if (!isDuplicate) {
+                setStatus('error');
+                setFeedback(
+                  err instanceof Error
+                    ? err.message
+                    : 'Error inesperado al conectar con el servidor.',
+                );
+              } else {
+                setStatus('idle');
+              }
               throw err;
             }
           }}
