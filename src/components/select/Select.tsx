@@ -166,10 +166,19 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
     // Controlled vs. uncontrolled
     const isControlled = value !== undefined;
+    const formValue =
+      formCtx && name && !isControlled
+        ? (formCtx.values[name] as string | null | undefined)
+        : undefined;
+    const isFormControlled = formValue !== undefined;
     const [internalValue, setInternalValue] = useState<string | null>(
       defaultValue,
     );
-    const currentValue = isControlled ? value : internalValue;
+    const currentValue = isControlled
+      ? value
+      : isFormControlled
+        ? (formValue ?? null)
+        : internalValue;
 
     // ── Refs ────────────────────────────────────────────────────
     const triggerRef = useRef<HTMLDivElement>(null);
