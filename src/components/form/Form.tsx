@@ -139,6 +139,13 @@ export const Form = React.forwardRef<FormApi, FormProps>(
       new Map<string, React.RefObject<HTMLElement | null>>(),
     );
 
+    // ── External error tracking ──────────────────────────────────
+    // Tracks fields whose error was injected externally (e.g. from a
+    // backend response via formApi.setError). Automatic validation
+    // (blur / change / submit) must NOT overwrite these errors; only
+    // a user-initiated value change or an explicit reset clears them.
+    const externalErrorsRef = useRef(new Set<string>());
+
     const registerRef = useCallback(
       (name: string, fieldRef: React.RefObject<HTMLElement | null>) => {
         fieldRefsMap.current.set(name, fieldRef);
@@ -169,10 +176,14 @@ export const Form = React.forwardRef<FormApi, FormProps>(
       setValues({ ...init });
       setErrors({});
       setTouched({});
+      externalErrorsRef.current.clear();
     }, []);
 
     const handleSetValue = useCallback((name: string, value: unknown) => {
       setValues((prev) => ({ ...prev, [name]: value }));
+
+      // User changed the value → clear any external error for this field
+      externalErrorsRef.current.delete(name);
 
       // Validate on change if configured (§2.5)
       if (validateOnRef.current === 'change') {
@@ -189,7 +200,12 @@ export const Form = React.forwardRef<FormApi, FormProps>(
       setTouched((prev) => ({ ...prev, [name]: true }));
 
       // Validate on blur if configured (§2.5)
-      if (validateOnRef.current === 'blur') {
+      // Skip if this field carries an external error — it should only
+      // be cleared when the user changes the value, not on blur.
+      if (
+        validateOnRef.current === 'blur' &&
+        !externalErrorsRef.current.has(name)
+      ) {
         const rules = validationRulesRef.current[name];
         if (rules) {
           const currentValue = valuesRef.current[name];
@@ -203,6 +219,7 @@ export const Form = React.forwardRef<FormApi, FormProps>(
     const handleSetError = useCallback((name: string, msg: string) => {
       setErrors((prev) => ({ ...prev, [name]: msg }));
       setTouched((prev) => ({ ...prev, [name]: true }));
+      externalErrorsRef.current.add(name);
     }, []);
 
     const handleClearError = useCallback((name: string) => {
@@ -243,12 +260,22 @@ export const Form = React.forwardRef<FormApi, FormProps>(
         valuesRef.current,
         validationRulesRef.current,
       );
-      setErrors(allErrors);
+
+      // Preserve externally-injected errors (e.g. from backend) that
+      // haven't been cleared by a value change. Merge them on top of
+      // the validation results so they aren't silently wiped.
+      const mergedErrors = { ...allErrors };
+      for (const extName of externalErrorsRef.current) {
+        if (errorsRef.current[extName] != null) {
+          mergedErrors[extName] = errorsRef.current[extName];
+        }
+      }
+      setErrors(mergedErrors);
 
       // 3. If errors → focus first invalid, abort
-      const hasErrors = Object.values(allErrors).some((e) => e != null);
+      const hasErrors = Object.values(mergedErrors).some((e) => e != null);
       if (hasErrors) {
-        focusFirstInvalid(allErrors);
+        focusFirstInvalid(mergedErrors);
         return;
       }
 
