@@ -293,7 +293,7 @@ describe('Form', () => {
 
   // ── Disabled cascade ───────────────────────────────────────────
 
-  describe('Disabled cascade (§2.4)', () => {
+  describe('Disabled cascade', () => {
     it('disables all controls when Form.disabled=true', () => {
       renderForm({ disabled: true });
 
@@ -463,7 +463,7 @@ describe('Form', () => {
 
   // ── Focus on error ─────────────────────────────────────────────
 
-  describe('Focus on error (§7 contract)', () => {
+  describe('Focus on error', () => {
     it('focuses the first invalid field after a failed submit', async () => {
       const user = userEvent.setup();
       renderForm({
@@ -513,6 +513,38 @@ describe('Form', () => {
         expect.objectContaining({ role: 'admin' }),
         expect.any(Object),
       );
+    });
+  });
+
+  // ── Controlled value source ────────────────────────────────────
+
+  describe('Controlled value source', () => {
+    it('does not warn about uncontrolled→controlled for a field absent from initialValues', async () => {
+      const user = userEvent.setup();
+      const onSubmit = vi.fn();
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      render(
+        // `phone` is intentionally NOT in initialValues
+        <Form initialValues={{ fullName: '' }} onSubmit={onSubmit}>
+          <Field name="phone" label="Teléfono">
+            <InputText placeholder="Teléfono" />
+          </Field>
+          <button type="submit">Enviar</button>
+        </Form>,
+      );
+
+      await user.type(screen.getByPlaceholderText('Teléfono'), '555');
+
+      const controlledWarning = errorSpy.mock.calls.some((args) =>
+        String(args[0]).includes(
+          'changing an uncontrolled input to be controlled',
+        ),
+      );
+      expect(controlledWarning).toBe(false);
+      expect(screen.getByPlaceholderText('Teléfono')).toHaveValue('555');
+
+      errorSpy.mockRestore();
     });
   });
 
@@ -583,6 +615,14 @@ describe('validation', () => {
       expect(await validateField('4', rules)).toBeNull();
       // Ignore if not numeric
       expect(await validateField('abc', rules)).toBeNull();
+    });
+
+    // Empty values must not trip min/max on optional fields (Number('') === 0)
+    it('skips min/max for empty / null values', async () => {
+      expect(await validateField('', [{ min: 1 }])).toBeNull();
+      expect(await validateField(null, [{ min: 1 }])).toBeNull();
+      expect(await validateField('', [{ max: 5 }])).toBeNull();
+      expect(await validateField(null, [{ max: 5 }])).toBeNull();
     });
 
     // Pattern (string presets)

@@ -7,7 +7,7 @@ import { createContext, useContext } from 'react';
  * extended (or replaced) by FormContext, which propagates `disabled`
  * all the way from Form → FieldGroup → Field → control.
  *
- * The cascade rule (§2.4): if any ancestor in the chain sets
+ * The cascade rule: if any ancestor in the chain sets
  * `disabled: true`, every descendant is disabled. No child can
  * re-enable itself. Field reads this context and OR-merges it with
  * its own `disabled` prop before writing to FieldContext.
@@ -16,7 +16,7 @@ import { createContext, useContext } from 'react';
 export interface FieldGroupContextValue {
   /**
    * Whether the entire group is disabled. Merged with OR at every level
-   * so the ancestor always wins (§2.4).
+   * so the ancestor always wins.
    */
   disabled: boolean;
 }

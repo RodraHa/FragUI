@@ -30,7 +30,7 @@ export interface FieldProps {
    * Visual status of the field.
    * - `"idle"` — default, no validation executed.
    * - `"error"` — in the Form sprint, derived from `errors[name]`.
-   * - `"success"` / `"warning"` — manual only (§2.1).
+   * - `"success"` / `"warning"` — manual only.
    *
    * @default "idle"
    */
@@ -50,7 +50,7 @@ export interface FieldProps {
   /**
    * Disables the field and its child control. Inheritable from FieldGroup
    * (and in the Form sprint, from Form). Ancestor always wins — no child
-   * prop can re-enable a field once a parent sets disabled (§2.4).
+   * prop can re-enable a field once a parent sets disabled.
    * @default false
    */
   disabled?: boolean;
@@ -75,7 +75,7 @@ export interface FieldProps {
  * and other controls automatically receive `name`, `inputId`,
  * `describedById`, `size`, `status`, `disabled`, and `required`.
  *
- * Accessibility contract (§3):
+ * Accessibility contract:
  * - Generates a stable `inputId` linking the `<label>` and the control.
  * - Generates a stable `describedById` for `aria-describedby`.
  * - Error text takes priority over helper text for screen readers.
@@ -111,7 +111,7 @@ export const Field: React.FC<FieldProps> = ({
     : null;
   const resolvedErrorText = errorText ?? formError;
 
-  // ── Disabled: OR-merge with Form + FieldGroup + prop (§2.4: ancestor wins) ──
+  // ── Disabled: OR-merge with Form + FieldGroup + prop (ancestor wins) ──
   const groupCtx = useFieldGroupContext();
   const effectiveDisabled =
     (formCtx?.disabled ?? false) || (groupCtx?.disabled ?? false) || disabled;
@@ -125,7 +125,7 @@ export const Field: React.FC<FieldProps> = ({
   const hasError = !!resolvedErrorText || status === 'error';
   const effectiveStatus: FormStatus = hasError ? 'error' : status;
 
-  // ── Sub-text: error takes priority over helper (§3 accessibility) ─────
+  // ── Sub-text: error takes priority over helper (accessibility) ─────
   const subText = resolvedErrorText ?? helperText;
   const showSubText = !!subText;
 
@@ -178,7 +178,7 @@ export const Field: React.FC<FieldProps> = ({
           /**
            * `role="alert"` is assigned when showing an error so that
            * errors appearing dynamically (after user interaction) are
-           * immediately announced by screen readers (§ open Q1).
+           * immediately announced by screen readers.
            * For helper text we omit the role to avoid interrupting flow.
            */
           role={hasError ? 'alert' : undefined}

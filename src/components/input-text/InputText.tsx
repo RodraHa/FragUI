@@ -27,7 +27,7 @@ export interface InputTextProps extends Omit<
   size?: Size;
   /**
    * Estado visual del campo. En V1 se pasa directamente; en V2 será
-   * provisto por FieldContext con prioridad sobre este prop (§2.6).
+   * provisto por FieldContext con prioridad sobre este prop.
    * @default "idle"
    */
   status?: FormStatus;
@@ -55,7 +55,7 @@ export interface InputTextProps extends Omit<
   autoComplete?: string;
   /**
    * Callback de cambio. Recibe el valor como string primero, luego el
-   * evento nativo (value-first signature, spec §5).
+   * evento nativo (value-first signature).
    */
   onChange?: (value: string, event: ChangeEvent<HTMLInputElement>) => void;
   /** Callback de blur. */
@@ -69,9 +69,9 @@ export interface InputTextProps extends Omit<
 /**
  * InputText — control de entrada de texto de una sola línea.
  *
- * No gestiona label, error ni estado visual; delega todo eso a Field (§5).
+ * No gestiona label, error ni estado visual; delega todo eso a Field.
  * Soporta ref forwarding al <input> nativo para que Form pueda enfocar
- * programáticamente el primer campo inválido tras un submit fallido (§2.7).
+ * programáticamente el primer campo inválido tras un submit fallido.
  */
 export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
   (
@@ -103,15 +103,15 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     },
     ref,
   ) => {
-    // ── FieldContext integration (§2.6) ─────────────────────────────
+    // ── FieldContext integration ────────────────────────────────────
     // Direct props win over context, except `disabled` which always
-    // OR-merges (ancestor wins, §2.4).
+    // OR-merges (ancestor wins).
     const fieldCtx = useFieldContext();
     const formCtx = useFormContext();
 
     const size: Size = sizeProp ?? fieldCtx?.size ?? 'md';
     const status: FormStatus = statusProp ?? fieldCtx?.status ?? 'idle';
-    // Ancestor disabled always wins — no child can re-enable (§2.4)
+    // Ancestor disabled always wins — no child can re-enable
     const disabled = (fieldCtx?.disabled ?? false) || disabledProp;
     const name = nameProp ?? fieldCtx?.name;
     // id from context takes precedence over rest spread; direct id in rest wins over context
@@ -128,7 +128,7 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     const resolvedAriaRequired =
       (rest as React.InputHTMLAttributes<HTMLInputElement>)['aria-required'] ??
       (fieldCtx?.required ? ('true' as const) : undefined);
-    // Native required attribute (§3 accessibility contract)
+    // Native required attribute (accessibility contract)
     const resolvedRequired =
       (rest as React.InputHTMLAttributes<HTMLInputElement>).required ??
       fieldCtx?.required;
@@ -151,11 +151,16 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     // Uncontrolled internal value (only used when value prop is absent)
     // When inside a Form, the form context value acts as the controlled source.
     const isControlled = value !== undefined;
-    const formValue =
-      formCtx && name && !isControlled
-        ? (formCtx.values[name] as string | undefined)
-        : undefined;
-    const isFormControlled = formValue !== undefined;
+    // When the field lives inside a Form, the form context owns the value
+    // from mount — even before the field's key exists in `values`. Deriving
+    // `isFormControlled` from the *presence* of a Form + name (rather than
+    // from `formValue !== undefined`) keeps the <input> controlled across its
+    // whole lifetime and avoids React's uncontrolled→controlled warning the
+    // first time the user types into a field absent from `initialValues`.
+    const isFormControlled = !isControlled && formCtx != null && name != null;
+    const formValue = isFormControlled
+      ? (formCtx!.values[name!] as string | undefined)
+      : undefined;
     const [internalValue, setInternalValue] = useState(defaultValue);
     const currentValue = isControlled
       ? value
@@ -193,14 +198,17 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
     const handleClear = (e: React.MouseEvent<HTMLButtonElement>) => {
       const nativeInput = inputRef.current;
       if (nativeInput) {
-        // Set native value and dispatch a synthetic change event so
-        // React's event system picks it up and re-renders.
+        // Clear the native DOM value directly. This is required for the
+        // uncontrolled (non-Form) case, where React does not bind the
+        // input value to state and so a state update alone wouldn't reset
+        // the visible value. We deliberately do NOT dispatch a synthetic
+        // `input` event here: that would re-enter `handleChange` and cause
+        // `onChange` / `formCtx.setValue` to fire twice for a single clear.
         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
           window.HTMLInputElement.prototype,
           'value',
         )?.set;
         nativeInputValueSetter?.call(nativeInput, '');
-        nativeInput.dispatchEvent(new Event('input', { bubbles: true }));
       }
       if (!isControlled) {
         setInternalValue('');
@@ -210,13 +218,19 @@ export const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
       onClear?.();
     };
 
-    // ── Register ref with FormContext for focus-on-error (§7) ────
+    // ── Register ref with FormContext for focus-on-error ────────
+    // Depend on the stable register/unregister callbacks (memoised in Form)
+    // and `name` only — not the whole `formCtx`, which is a new object on
+    // every form state change and would otherwise re-run this effect on
+    // each keystroke anywhere in the form.
+    const registerRef = formCtx?.registerRef;
+    const unregisterRef = formCtx?.unregisterRef;
     useEffect(() => {
-      if (formCtx && name) {
-        formCtx.registerRef(name, inputRef);
-        return () => formCtx.unregisterRef(name);
+      if (registerRef && unregisterRef && name) {
+        registerRef(name, inputRef);
+        return () => unregisterRef(name);
       }
-    }, [formCtx, name]);
+    }, [registerRef, unregisterRef, name]);
 
     const containerStyle = {
       ...getContainerStyle(

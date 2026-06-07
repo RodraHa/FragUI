@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "fullName": "María García",
+      "email": "admin@fragui.dev",
+      "role": "admin"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

@@ -43,7 +43,7 @@ export const legendResetStyle: CSSProperties = {
 };
 
 /* ─── Collapsible trigger button ───────────────────────────────────
- * Must be a real <button> for keyboard accessibility (§4 contract).
+ * Must be a real <button> for keyboard accessibility (contract).
  * Inherits legend text styles and adds interaction affordances.
  * ────────────────────────────────────────────────────────────────── */
 export function getCollapseTriggerStyle(disabled: boolean): CSSProperties {

@@ -6,6 +6,7 @@ import { FieldGroup } from '../../../src/components/field-group/FieldGroup';
 import { InputText } from '../../../src/components/input-text/InputText';
 import { Select } from '../../../src/components/select/Select';
 import { Button } from '../../../src/components/button/Button';
+import { Alert } from '../../../src/components/alert/Alert';
 import type { FormApi } from '../../../src/types/form';
 
 /* ─── Shared options ────────────────────────────────────────────── */
@@ -61,19 +62,19 @@ const meta = {
     },
     validationRules: {
       control: false,
-      description: 'Reglas de validación por campo. Ver tipo `ValidationRule` (§2.8).',
+      description: 'Reglas de validación por campo. Ver tipo `ValidationRule`.',
       table: { category: 'Validación', defaultValue: { summary: '{}' } },
     },
     validateOn: {
       control: 'select',
       options: ['change', 'blur', 'submit'],
       description:
-        'Momento global de validación. Sobreescribible por campo en `Field.validateOn` (§2.5).',
+        'Momento global de validación. Sobreescribible por campo en `Field.validateOn`.',
       table: { category: 'Validación', defaultValue: { summary: '"submit"' } },
     },
     disabled: {
       control: 'boolean',
-      description: 'Deshabilita todo el árbol del formulario vía contexto (§2.4).',
+      description: 'Deshabilita todo el árbol del formulario vía contexto.',
       table: { category: 'Estado', defaultValue: { summary: 'false' } },
     },
     resetOnSuccess: {
@@ -121,9 +122,10 @@ export const Default: Story = {
       description: {
         story:
           'Formulario básico sin reglas de validación. El submit muestra los valores ' +
-          'capturados. Observa cómo los campos se deshabilitan automáticamente mientras ' +
-          '`isSubmitting` es `true` — conecta un `Button[loading]` a esa prop para ' +
-          'prevenir doble-submit.',
+          'capturados. Nota: `Form` no deshabilita los campos automáticamente durante ' +
+          'el envío — `isSubmitting` se expone vía `FormApi` para que tú decidas la UI. ' +
+          'Lo habitual es enlazar `Button[loading]`/`disabled` a `isSubmitting` para ' +
+          'prevenir doble-submit, o pasar `disabled` al `Form` mientras dure el envío.',
       },
     },
   },
@@ -291,7 +293,7 @@ export const Disabled: Story = {
         story:
           '`disabled={true}` en `Form` propaga el estado a todo el árbol vía ' +
           '`FormContext`. Ningún prop local en `FieldGroup`, `Field` o los controles ' +
-          'puede re-habilitarlos — el ancestro siempre gana (§2.4). Útil mientras ' +
+          'puede re-habilitarlos — el ancestro siempre gana. Útil mientras ' +
           '`isSubmitting` es verdadero.',
       },
     },
@@ -600,14 +602,14 @@ export const ResetOnSuccess: Story = {
   },
 };
 
-/* ─── Ejemplo completo: CreateUserForm (specs §9) ───────────────── */
+/* ─── Ejemplo completo: CreateUserForm ──────────────────────────── */
 
 export const CreateUserForm: Story = {
   parameters: {
     docs: {
       description: {
         story:
-          'El ejemplo completo de las especificaciones técnicas (§9). Muestra la ' +
+          'El ejemplo completo de las especificaciones técnicas. Muestra la ' +
           'composición canónica: `Form > FieldGroup > Field > InputText | Select`. ' +
           'Validación en blur, manejo de errores de campo desde backend, y navegación ' +
           'tras submit exitoso simulada con un alert.',
@@ -686,4 +688,188 @@ export const CreateUserForm: Story = {
       </div>
     </Form>
   ),
+};
+
+/* ─── Integración con JSON-Server ──────────────────────────────── */
+
+export const JsonServerIntegration: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Integración real con `json-server` (puerto 4000). ' +
+          'El formulario envía datos mediante `fetch` POST a `/users`. ' +
+          'Antes de enviar, verifica si el email ya existe con GET. ' +
+          'Muestra estados de cargando, éxito y error usando los componentes ' +
+          '`Button[loading]` y `Alert`.\n\n' +
+          '**Requisito:** ejecutar `npm run server` en otra terminal antes ' +
+          'de probar esta historia.',
+      },
+    },
+  },
+  args: {
+    initialValues: { fullName: '', email: '', role: null },
+    validationRules: {
+      fullName: [
+        { required: true, message: 'El nombre es obligatorio' },
+        { minLength: 2, message: 'Mínimo 2 caracteres' },
+      ],
+      email: [
+        { required: true, message: 'El correo es obligatorio' },
+        { pattern: 'email', message: 'Ingresa un correo válido' },
+      ],
+      role: [{ required: true, message: 'Selecciona un rol' }],
+    },
+    validateOn: 'blur',
+    resetOnSuccess: true,
+  },
+  render: (args) => {
+    const [status, setStatus] = useState<
+      'idle' | 'loading' | 'success' | 'error'
+    >('idle');
+    const [feedback, setFeedback] = useState('');
+
+    const API_URL = 'http://localhost:4000/users';
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <Form
+          {...args}
+          onSubmit={async (values, formApi) => {
+            setStatus('loading');
+            setFeedback('');
+
+            try {
+              // 1. Verificar duplicidad de email (GET)
+              const checkRes = await fetch(
+                `${API_URL}?email=${values.email}`,
+              );
+              const existing = await checkRes.json();
+
+              if (existing.length > 0) {
+                formApi.setError(
+                  'email',
+                  'Este correo ya está registrado en el sistema',
+                );
+                // Debe lanzar para que Form no ejecute resetOnSuccess
+                throw new Error('DUPLICATE_EMAIL');
+              }
+
+              // 2. Enviar datos al servidor (POST)
+              const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(values),
+              });
+
+              if (!res.ok) {
+                throw new Error(
+                  `Error del servidor: ${res.status} ${res.statusText}`,
+                );
+              }
+
+              const created = await res.json();
+              setStatus('success');
+              setFeedback(
+                `Usuario #${created.id} registrado exitosamente.`,
+              );
+            } catch (err) {
+              // Duplicidad ya inyectó el error en el campo — solo volver a idle
+              const isDuplicate =
+                err instanceof Error &&
+                err.message === 'DUPLICATE_EMAIL';
+
+              if (!isDuplicate) {
+                setStatus('error');
+                setFeedback(
+                  err instanceof Error
+                    ? err.message
+                    : 'Error inesperado al conectar con el servidor.',
+                );
+              } else {
+                setStatus('idle');
+              }
+              throw err;
+            }
+          }}
+          onError={() => {
+            /* El estado ya se manejó en el catch */
+          }}
+        >
+          <FieldGroup title="Datos personales" columns={2} gap="md">
+            <Field name="fullName" label="Nombre completo" required>
+              <InputText
+                placeholder="Ej. María García"
+                autoComplete="name"
+                clearable
+              />
+            </Field>
+            <Field name="email" label="Correo electrónico" required>
+              <InputText
+                type="email"
+                placeholder="correo@ejemplo.com"
+                autoComplete="email"
+              />
+            </Field>
+          </FieldGroup>
+
+          <FieldGroup title="Permisos">
+            <Field name="role" label="Rol del usuario" required>
+              <Select
+                options={roleOptions}
+                searchable
+                clearable
+                placeholder="Selecciona un rol"
+              />
+            </Field>
+          </FieldGroup>
+
+          <p style={{ margin: 0, fontSize: '0.8rem', color: '#737373' }}>
+            Prueba con <strong>admin@fragui.dev</strong> para ver el error
+            de duplicidad del servidor.
+            <br />
+            <strong>Requisito:</strong> ejecuta{' '}
+            <code>npm run server</code> en otra terminal.
+          </p>
+
+          <div style={{ alignSelf: 'flex-start' }}>
+            <Button
+              type="submit"
+              size="sm"
+              loading={status === 'loading'}
+              loadingText="Registrando…"
+            >
+              Crear usuario
+            </Button>
+          </div>
+        </Form>
+
+        {status === 'success' && (
+          <Alert
+            status="success"
+            variant="outlined"
+            title="¡Registro exitoso!"
+            description={feedback}
+            showIcon
+            dismissible
+            animation="fade"
+            onClose={() => setStatus('idle')}
+          />
+        )}
+
+        {status === 'error' && (
+          <Alert
+            status="error"
+            variant="outlined"
+            title="Error en el registro"
+            description={feedback}
+            showIcon
+            dismissible
+            animation="fade"
+            onClose={() => setStatus('idle')}
+          />
+        )}
+      </div>
+    );
+  },
 };

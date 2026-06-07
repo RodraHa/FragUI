@@ -8,7 +8,7 @@ import type { ValidateOn } from '../types/form';
  * This interface is NOT part of the public API. External consumers
  * interact with `FormApi` (via `onSubmit`, `useForm(id)`, or `ref`).
  *
- * See spec §2.6 and §10 for the full context hierarchy.
+ * See the full context hierarchy in the architecture docs.
  * ────────────────────────────────────────────────────────────── */
 
 export interface FormContextValue {
@@ -20,9 +20,9 @@ export interface FormContextValue {
   touched: Record<string, boolean>;
   /** Whether the form is currently submitting. */
   isSubmitting: boolean;
-  /** Global disabled state — cascades to all descendants (§2.4). */
+  /** Global disabled state — cascades to all descendants. */
   disabled: boolean;
-  /** Global validation timing — overridable per-field via Field.validateOn (§2.5). */
+  /** Global validation timing — overridable per-field via Field.validateOn. */
   validateOn: ValidateOn;
 
   // ── Methods for controls to report changes ────────────────────
@@ -32,7 +32,7 @@ export interface FormContextValue {
   /** Mark a field as touched. Called by InputText/Select on blur. */
   setTouched: (name: string) => void;
   /**
-   * Register a ref for focus-on-error after failed submit (§7 contract).
+   * Register a ref for focus-on-error after failed submit (accessibility contract).
    * Called by InputText/Select on mount.
    */
   registerRef: (name: string, ref: React.RefObject<HTMLElement | null>) => void;

@@ -2,7 +2,7 @@
  * Public types consumed by `Form`, `Field`, and external consumers
  * via `useForm(id)` or `ref`.
  *
- * See spec §2.8 (ValidationRule) and §7.1 (FormApi).
+ * See the ValidationRule and FormApi types defined below.
  * ────────────────────────────────────────────────────────────── */
 
 /** When validation runs for a field. */
@@ -11,7 +11,7 @@ export type ValidateOn = 'change' | 'blur' | 'submit';
 /**
  * A single validation rule.
  *
- * Rules are evaluated in order; the first failure stops the chain (§2.8).
+ * Rules are evaluated in order; the first failure stops the chain.
  * All rules have an optional `message`; if omitted the system provides a
  * sensible default in Spanish.
  */

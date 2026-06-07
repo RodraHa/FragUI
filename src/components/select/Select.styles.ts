@@ -146,12 +146,13 @@ export const clearButtonStyle: CSSProperties = {
  * ────────────────────────────────────────────────────────────── */
 export function getPanelStyle(
   size: Size,
-  fullWidth: boolean = true,
   width?: string | number,
 ): CSSProperties {
   const tokens = selectPanelSize[size];
-  const resolvedWidth: string | number | undefined =
-    width !== undefined ? width : fullWidth ? undefined : undefined;
+  // Only an explicit `width` constrains the panel. When absent, the panel's
+  // width is governed by the Floating UI `size` middleware (min-width matched
+  // to the trigger), so `fullWidth` has no effect here and is not a parameter.
+  const resolvedWidth = width;
   return {
     boxSizing: 'border-box',
     maxHeight: tokens.maxHeight,
