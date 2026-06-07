@@ -17,6 +17,7 @@ src/
  │       ├─ Alert.styles.ts
  │       ├─ Alert.test.tsx
  │       └─ index.ts
+ ├─ contexts/           # Contextos React (FormContext, FieldContext, FieldGroupContext)
  ├─ hooks/              # Hooks genéricos reutilizables
  ├─ types/              # Definiciones de tipos TypeScript
  ├─ theme/              # Sistema de temas
@@ -56,7 +57,8 @@ npm run storybook
 ### Build
 
 ```bash
-# Compilar la biblioteca
+# Compilar y empaquetar la biblioteca (tsup → dist/)
+# Genera dist/index.js (CJS) + dist/index.mjs (ESM) + dist/index.d.ts minificados
 npm run build
 
 # Compilar Storybook
@@ -268,6 +270,8 @@ BREAKING CHANGE: theme tokens have been restructured"
 
 - **React 19**
 - **TypeScript**
+- **tsup** - Bundling y minificación de la librería (ESM + CJS)
+- **@floating-ui/react** - Posicionamiento de elementos flotantes (Select)
 - **Storybook** - Desarrollo de componentes aislados
 - **Vitest** - Testing
 - **ESLint + Prettier** - Linting y formateo
