@@ -21,7 +21,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "USAGE.md"
   ],
   "scripts": {
     "build": "node -e \"require('fs').rmSync('./dist',{recursive:true,force:true})\" && tsup",

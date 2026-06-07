@@ -36,8 +36,7 @@ docs/
  │   ├─ accesibilidad/
  │   ├─ interaccion/
  │   └─ convenciones/
- ├─ components/         # Stories de Storybook por componente
- └─ sistema-formularios/ # Documentación técnica del sistema de formularios
+ └─ components/         # Stories de Storybook por componente
 ```
 
 ## Instalación
