@@ -116,7 +116,9 @@ describe('FieldGroup', () => {
     it('content grid applies correct column count', () => {
       const { container } = renderGroup({ columns: 3 });
       const grid = container.querySelector('[role="group"]');
-      expect(grid).toHaveStyle({ gridTemplateColumns: 'repeat(3, 1fr)' });
+      expect(grid).toHaveStyle({
+        gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+      });
     });
   });
 

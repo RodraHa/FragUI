@@ -15,5 +15,9 @@ export function getFormStyle(): CSSProperties {
     flexDirection: 'column',
     gap: '1.5rem',
     boxSizing: 'border-box',
+    // Fill the parent and allow shrinking when nested in a flex/grid layout,
+    // so the form never forces horizontal overflow on small screens.
+    width: '100%',
+    minWidth: 0,
   };
 }

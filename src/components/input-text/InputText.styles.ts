@@ -83,7 +83,14 @@ export function getContainerStyle(
       'border-color 0.15s ease, outline 0.15s ease, background-color 0.15s ease, opacity 0.15s ease',
     position: 'relative',
     width: resolvedWidth,
-    ...(resolvedWidth === undefined ? { minWidth: autoMinWidth[size] } : {}),
+    // Never exceed the parent's width on narrow viewports.
+    maxWidth: '100%',
+    // `min(<floor>, 100%)` caps the auto min-width to the container so it
+    // can't defeat `maxWidth` (min-width has higher CSS priority) — the input
+    // keeps its sensible floor on wide screens but shrinks on small ones.
+    ...(resolvedWidth === undefined
+      ? { minWidth: `min(${autoMinWidth[size]}, 100%)` }
+      : {}),
   };
 }
 
