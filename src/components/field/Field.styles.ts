@@ -22,6 +22,10 @@ export function getFieldWrapperStyle(): CSSProperties {
     display: 'flex',
     flexDirection: 'column',
     boxSizing: 'border-box',
+    // Allow the field to shrink below its content's intrinsic size when it
+    // sits in a grid/flex track (default `min-width: auto` would otherwise
+    // force the track to overflow on narrow viewports).
+    minWidth: 0,
   };
 }
 
@@ -68,6 +72,8 @@ export function getSubTextStyle(
     fontFamily: fontFamily.satoshi,
     color: isError ? statusTextColor.error : statusTextColor[status],
     lineHeight: 'normal',
+    // Wrap long error/helper messages instead of forcing horizontal overflow.
+    overflowWrap: 'break-word',
     transition: 'color 0.15s ease',
   };
 }

@@ -323,8 +323,8 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         if (formCtx && name) formCtx.setValue(name, opt.value);
         onChange?.(opt.value);
         closePanel();
-        // Return focus to trigger
-        triggerRef.current?.focus();
+        // Return focus to trigger without scrolling the page
+        triggerRef.current?.focus({ preventScroll: true });
       },
       [isControlled, onChange, closePanel, formCtx, name],
     );
@@ -338,7 +338,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         }
         if (formCtx && name) formCtx.setValue(name, null);
         onChange?.(null);
-        triggerRef.current?.focus();
+        triggerRef.current?.focus({ preventScroll: true });
       },
       [isControlled, onChange, formCtx, name],
     );
@@ -362,17 +362,24 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, closePanel]);
 
-    // Focus search input when panel opens
+    // Focus search input when panel opens without scrolling the page
     useEffect(() => {
       if (isOpen && searchable && searchInputRef.current) {
-        searchInputRef.current.focus();
+        searchInputRef.current.focus({ preventScroll: true });
       }
     }, [isOpen, searchable]);
 
-    // Scroll active option into view
+    // Scroll active option into view within the panel only (never scrolls the page)
     useEffect(() => {
-      if (isOpen && activeIndex >= 0 && optionRefs.current[activeIndex]) {
-        optionRefs.current[activeIndex]?.scrollIntoView?.({ block: 'nearest' });
+      const option = optionRefs.current[activeIndex];
+      const panel = panelRef.current;
+      if (!isOpen || activeIndex < 0 || !option || !panel) return;
+      const optionTop = option.offsetTop;
+      const optionBottom = optionTop + option.offsetHeight;
+      if (optionTop < panel.scrollTop) {
+        panel.scrollTop = optionTop;
+      } else if (optionBottom > panel.scrollTop + panel.clientHeight) {
+        panel.scrollTop = optionBottom - panel.clientHeight;
       }
     }, [isOpen, activeIndex]);
 
@@ -454,7 +461,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
           if (isOpen) {
             e.preventDefault();
             closePanel();
-            triggerRef.current?.focus();
+            triggerRef.current?.focus({ preventScroll: true });
           }
           break;
         }
@@ -509,7 +516,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         case 'Escape': {
           e.preventDefault();
           closePanel();
-          triggerRef.current?.focus();
+          triggerRef.current?.focus({ preventScroll: true });
           break;
         }
         case 'Tab': {

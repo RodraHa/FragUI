@@ -1,6 +1,7 @@
 import React, { useId, useState } from 'react';
 import { FieldGroupContext, useFieldGroupContext } from '../../contexts';
 import { useFormContext } from '../../contexts/FormContext';
+import { useKeyframes } from '../../hooks';
 import {
   getFieldsetStyle,
   legendResetStyle,
@@ -10,6 +11,7 @@ import {
   getDescriptionStyle,
   getHeaderStyle,
   getContentGridStyle,
+  fieldGroupResponsiveCss,
 } from './FieldGroup.styles';
 
 export interface FieldGroupProps {
@@ -99,6 +101,9 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
     (formCtx?.disabled ?? false) ||
     (parentGroupCtx?.disabled ?? false) ||
     disabled;
+
+  // ── Responsive grid collapsing (injected once into <head>) ──────────────
+  useKeyframes('fragui-field-group-responsive', fieldGroupResponsiveCss, true);
 
   // ── Stable IDs ─────────────────────────────────────────────────────────
   const uid = useId();
@@ -191,6 +196,7 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
         id={contentId}
         role="group"
         hidden={isCollapsed || undefined}
+        {...(isCollapsed ? {} : { 'data-fg-grid': columns })}
         style={isCollapsed ? undefined : getContentGridStyle(columns, gap)}
       >
         <FieldGroupContext.Provider value={{ disabled: effectiveDisabled }}>

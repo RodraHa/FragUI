@@ -116,15 +116,50 @@ export function getHeaderStyle(hasContent: boolean): CSSProperties {
   };
 }
 
-/* ─── Content grid ──────────────────────────────────────────────── */
+/* ─── Content grid ──────────────────────────────────────────────────
+ * `minmax(0, 1fr)` (instead of plain `1fr`) lets each column shrink
+ * below its content's intrinsic size, so a wide field or a long value
+ * never forces the track — and therefore the page — to overflow.
+ *
+ * The desktop column count comes from this inline style; narrow-viewport
+ * collapsing is layered on top via `fieldGroupResponsiveCss` (injected
+ * once into <head>), keyed off the `data-fg-grid` attribute.
+ * ────────────────────────────────────────────────────────────────── */
 export function getContentGridStyle(
   columns: 1 | 2 | 3 | 4,
   gap: 'sm' | 'md' | 'lg',
 ): CSSProperties {
   return {
     display: 'grid',
-    gridTemplateColumns: `repeat(${columns}, 1fr)`,
+    gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
     gap: fieldGroupGap[gap],
     alignItems: 'start',
   };
 }
+
+/* ─── Responsive column collapsing ──────────────────────────────────
+ * Inline styles can't express media queries, so the multi-column grids
+ * collapse via a single stylesheet injected into <head> (deduped by id).
+ * `!important` is required to win over the inline `grid-template-columns`.
+ *
+ *   ≤ 900px : 3 & 4-column groups → 2 columns
+ *   ≤ 600px : every multi-column group → 1 column
+ *
+ * Only expanded groups carry `data-fg-grid` (see FieldGroup.tsx), so a
+ * collapsed group — which has no inline `display:grid` — is never matched.
+ * ────────────────────────────────────────────────────────────────── */
+export const fieldGroupResponsiveCss = `
+@media (max-width: 900px) {
+  [data-fg-grid="3"],
+  [data-fg-grid="4"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+@media (max-width: 600px) {
+  [data-fg-grid="2"],
+  [data-fg-grid="3"],
+  [data-fg-grid="4"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+`;
