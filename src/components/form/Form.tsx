@@ -29,17 +29,17 @@ export interface FormProps {
    */
   initialValues?: Record<string, unknown>;
   /**
-   * Validation rules per field (§2.8).
+   * Validation rules per field.
    * @default {}
    */
   validationRules?: Record<string, ValidationRule[]>;
   /**
-   * Global validation timing. Overridable per-field via `Field.validateOn` (§2.5).
+   * Global validation timing. Overridable per-field via `Field.validateOn`.
    * @default "submit"
    */
   validateOn?: ValidateOn;
   /**
-   * Disables the entire form tree via context (§2.4).
+   * Disables the entire form tree via context.
    * @default false
    */
   disabled?: boolean;
@@ -79,7 +79,7 @@ export interface FormProps {
  * Provides `FormContext` so that `FieldGroup`, `Field`, `InputText`,
  * and `Select` automatically read/write form state.
  *
- * Accessibility contract (§7):
+ * Accessibility contract:
  * - Preserves native `<form>` behaviour (Enter submits).
  * - Focuses the first invalid field after a failed submit.
  * - Exposes `FormApi` via `ref` (imperative handle).
@@ -185,7 +185,7 @@ export const Form = React.forwardRef<FormApi, FormProps>(
       // User changed the value → clear any external error for this field
       externalErrorsRef.current.delete(name);
 
-      // Validate on change if configured (§2.5)
+      // Validate on change if configured
       if (validateOnRef.current === 'change') {
         const rules = validationRulesRef.current[name];
         if (rules) {
@@ -199,7 +199,7 @@ export const Form = React.forwardRef<FormApi, FormProps>(
     const handleSetTouched = useCallback((name: string) => {
       setTouched((prev) => ({ ...prev, [name]: true }));
 
-      // Validate on blur if configured (§2.5)
+      // Validate on blur if configured
       // Skip if this field carries an external error — it should only
       // be cleared when the user changes the value, not on blur.
       if (

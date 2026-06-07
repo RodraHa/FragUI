@@ -4,24 +4,24 @@ import type { Size, FormStatus } from '../types';
 /* ─── FieldContext ───────────────────────────────────────────────
  * Provided by `Field` so that child controls (`InputText`, `Select`)
  * can read label-linking IDs, size, status, disabled, and required
- * without explicit prop drilling (§2.6).
+ * without explicit prop drilling.
  *
  * Precedence rule: direct props on controls win over context,
  * EXCEPT `disabled` which uses OR-merging so that a disabled ancestor
- * can never be overridden by a child (§2.4).
+ * can never be overridden by a child.
  * ────────────────────────────────────────────────────────────── */
 
 export interface FieldContextValue {
   /** Field name — passed to the native `name` attribute on the control. */
   name: string;
   /**
-   * Disabled state. Merged with OR so ancestor always wins (§2.4).
+   * Disabled state. Merged with OR so ancestor always wins.
    * Controls must apply: `(fieldCtx?.disabled ?? false) || ownDisabled`.
    */
   disabled: boolean;
   /**
    * Whether the field is required. Controls use this to:
-   * - Set the native `required` attribute (§3 accessibility contract).
+   * - Set the native `required` attribute (accessibility contract).
    * - Set `aria-required="true"`.
    */
   required: boolean;

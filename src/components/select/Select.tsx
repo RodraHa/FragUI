@@ -46,7 +46,7 @@ export interface SelectProps {
   size?: Size;
   /**
    * Estado visual del campo. En V1 se pasa directamente; en V2 será
-   * provisto por FieldContext (§2.6). @default "idle"
+   * provisto por FieldContext. @default "idle"
    */
   status?: FormStatus;
   /**
@@ -96,9 +96,9 @@ export interface SelectProps {
 /**
  * Select — control de selección única con opciones estáticas.
  *
- * No gestiona label, error ni estado visual; delega todo eso a Field (§6).
+ * No gestiona label, error ni estado visual; delega todo eso a Field.
  * Soporta ref forwarding al trigger nativo para que Form pueda enfocar
- * programáticamente el primer campo inválido tras un submit fallido (§2.7).
+ * programáticamente el primer campo inválido tras un submit fallido.
  */
 export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
   (
@@ -131,15 +131,15 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
     },
     ref,
   ) => {
-    // ── FieldContext integration (§2.6) ─────────────────────────────
+    // ── FieldContext integration ────────────────────────────────────
     // Direct props win over context, except `disabled` which always
-    // OR-merges (ancestor wins, §2.4).
+    // OR-merges (ancestor wins).
     const fieldCtx = useFieldContext();
     const formCtx = useFormContext();
 
     const size: Size = sizeProp ?? fieldCtx?.size ?? 'md';
     const status: FormStatus = statusProp ?? fieldCtx?.status ?? 'idle';
-    // Ancestor disabled always wins — no child can re-enable (§2.4)
+    // Ancestor disabled always wins — no child can re-enable
     const disabled = (fieldCtx?.disabled ?? false) || disabledProp;
     const name = nameProp ?? fieldCtx?.name;
     const id = idProp ?? fieldCtx?.inputId;
@@ -166,11 +166,14 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
     // Controlled vs. uncontrolled
     const isControlled = value !== undefined;
-    const formValue =
-      formCtx && name && !isControlled
-        ? (formCtx.values[name] as string | null | undefined)
-        : undefined;
-    const isFormControlled = formValue !== undefined;
+    // Inside a Form, the form context owns the value from mount (mirrors
+    // InputText): derive `isFormControlled` from the presence of a Form +
+    // name so the value source stays consistent across the lifetime instead
+    // of flipping from internal state to form state after the first change.
+    const isFormControlled = !isControlled && formCtx != null && name != null;
+    const formValue = isFormControlled
+      ? (formCtx!.values[name!] as string | null | undefined)
+      : undefined;
     const [internalValue, setInternalValue] = useState<string | null>(
       defaultValue,
     );
@@ -548,13 +551,18 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
       onBlur?.(e);
     };
 
-    // ── Register ref with FormContext for focus-on-error (§7) ────
+    // ── Register ref with FormContext for focus-on-error ────────
+    // Depend on the stable register/unregister callbacks (memoised in Form)
+    // and `name` only — not the whole `formCtx`, which changes on every form
+    // state update and would re-run this effect on each keystroke.
+    const registerRef = formCtx?.registerRef;
+    const unregisterRef = formCtx?.unregisterRef;
     useEffect(() => {
-      if (formCtx && name) {
-        formCtx.registerRef(name, triggerRef);
-        return () => formCtx.unregisterRef(name);
+      if (registerRef && unregisterRef && name) {
+        registerRef(name, triggerRef);
+        return () => unregisterRef(name);
       }
-    }, [formCtx, name]);
+    }, [registerRef, unregisterRef, name]);
 
     // ── Derived values ──────────────────────────────────────────
     const selectedOption = options.find((opt) => opt.value === currentValue);
@@ -640,7 +648,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             role="listbox"
             aria-label={placeholder}
             style={{
-              ...getPanelStyle(size, fullWidth, width),
+              ...getPanelStyle(size, width),
               ...floatingStyles,
             }}
           >
@@ -651,6 +659,8 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
                 type="text"
                 role="searchbox"
                 aria-label="Buscar opciones"
+                aria-controls={listboxId}
+                aria-activedescendant={activeDescendant}
                 placeholder="Buscar…"
                 value={searchQuery}
                 onChange={(e) => {

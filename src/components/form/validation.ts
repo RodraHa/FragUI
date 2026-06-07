@@ -20,7 +20,7 @@ const DEFAULTS = {
 };
 
 /* ─── Single field validation ───────────────────────────────────
- * Evaluates rules in order; the first failure stops the chain (§2.8).
+ * Evaluates rules in order; the first failure stops the chain.
  * Returns the error message or `null` if valid.
  * ────────────────────────────────────────────────────────────── */
 
@@ -51,7 +51,10 @@ export async function validateField(
     }
 
     // ── min (numeric) ───────────────────────────────────────────
-    if ('min' in rule) {
+    // Skip empty values — an empty optional field must not fail min/max
+    // (Number('') === 0 would otherwise spuriously trip these). `required`
+    // governs the empty case.
+    if ('min' in rule && value != null && value !== '') {
       const num = typeof value === 'string' ? Number(value) : value;
       if (typeof num === 'number' && !isNaN(num) && num < rule.min) {
         return rule.message ?? DEFAULTS.min(rule.min);
@@ -59,7 +62,7 @@ export async function validateField(
     }
 
     // ── max (numeric) ───────────────────────────────────────────
-    if ('max' in rule) {
+    if ('max' in rule && value != null && value !== '') {
       const num = typeof value === 'string' ? Number(value) : value;
       if (typeof num === 'number' && !isNaN(num) && num > rule.max) {
         return rule.message ?? DEFAULTS.max(rule.max);

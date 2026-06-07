@@ -62,19 +62,19 @@ const meta = {
     },
     validationRules: {
       control: false,
-      description: 'Reglas de validación por campo. Ver tipo `ValidationRule` (§2.8).',
+      description: 'Reglas de validación por campo. Ver tipo `ValidationRule`.',
       table: { category: 'Validación', defaultValue: { summary: '{}' } },
     },
     validateOn: {
       control: 'select',
       options: ['change', 'blur', 'submit'],
       description:
-        'Momento global de validación. Sobreescribible por campo en `Field.validateOn` (§2.5).',
+        'Momento global de validación. Sobreescribible por campo en `Field.validateOn`.',
       table: { category: 'Validación', defaultValue: { summary: '"submit"' } },
     },
     disabled: {
       control: 'boolean',
-      description: 'Deshabilita todo el árbol del formulario vía contexto (§2.4).',
+      description: 'Deshabilita todo el árbol del formulario vía contexto.',
       table: { category: 'Estado', defaultValue: { summary: 'false' } },
     },
     resetOnSuccess: {
@@ -122,9 +122,10 @@ export const Default: Story = {
       description: {
         story:
           'Formulario básico sin reglas de validación. El submit muestra los valores ' +
-          'capturados. Observa cómo los campos se deshabilitan automáticamente mientras ' +
-          '`isSubmitting` es `true` — conecta un `Button[loading]` a esa prop para ' +
-          'prevenir doble-submit.',
+          'capturados. Nota: `Form` no deshabilita los campos automáticamente durante ' +
+          'el envío — `isSubmitting` se expone vía `FormApi` para que tú decidas la UI. ' +
+          'Lo habitual es enlazar `Button[loading]`/`disabled` a `isSubmitting` para ' +
+          'prevenir doble-submit, o pasar `disabled` al `Form` mientras dure el envío.',
       },
     },
   },
@@ -292,7 +293,7 @@ export const Disabled: Story = {
         story:
           '`disabled={true}` en `Form` propaga el estado a todo el árbol vía ' +
           '`FormContext`. Ningún prop local en `FieldGroup`, `Field` o los controles ' +
-          'puede re-habilitarlos — el ancestro siempre gana (§2.4). Útil mientras ' +
+          'puede re-habilitarlos — el ancestro siempre gana. Útil mientras ' +
           '`isSubmitting` es verdadero.',
       },
     },
@@ -601,14 +602,14 @@ export const ResetOnSuccess: Story = {
   },
 };
 
-/* ─── Ejemplo completo: CreateUserForm (specs §9) ───────────────── */
+/* ─── Ejemplo completo: CreateUserForm ──────────────────────────── */
 
 export const CreateUserForm: Story = {
   parameters: {
     docs: {
       description: {
         story:
-          'El ejemplo completo de las especificaciones técnicas (§9). Muestra la ' +
+          'El ejemplo completo de las especificaciones técnicas. Muestra la ' +
           'composición canónica: `Form > FieldGroup > Field > InputText | Select`. ' +
           'Validación en blur, manejo de errores de campo desde backend, y navegación ' +
           'tras submit exitoso simulada con un alert.',

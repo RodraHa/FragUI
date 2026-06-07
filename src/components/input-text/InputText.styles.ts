@@ -74,11 +74,7 @@ export function getContainerStyle(
     borderStyle: 'solid',
     borderColor,
     borderRadius: 0,
-    backgroundColor: disabled
-      ? colors.neutral[100]
-      : readOnly
-        ? colors.neutral[100]
-        : colors.white,
+    backgroundColor: disabled || readOnly ? colors.neutral[100] : colors.white,
     outline: isFocused ? `2px solid ${statusFocusRing[status]}` : 'none',
     outlineOffset: isFocused ? '2px' : '0',
     opacity: disabled ? 0.6 : 1,

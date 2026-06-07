@@ -283,6 +283,14 @@ describe('InputText', () => {
       expect(onChange).toHaveBeenCalledWith('', expect.any(Object));
     });
 
+    it('calls onChange exactly once per clear (no duplicate dispatch)', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      render(<InputText clearable defaultValue="hello" onChange={onChange} />);
+      await user.click(screen.getByRole('button', { name: /limpiar/i }));
+      expect(onChange).toHaveBeenCalledTimes(1);
+    });
+
     it('clear button has an aria-label attribute', async () => {
       const user = userEvent.setup();
       render(<InputText clearable />);

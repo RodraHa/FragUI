@@ -358,9 +358,9 @@ describe('Field', () => {
   });
 
   // -------------------------------------------------------------------------
-  // 10. Disabled — ancestor always wins (§2.4)
+  // 10. Disabled — ancestor always wins
   // -------------------------------------------------------------------------
-  describe('disabled inheritance from Field (§2.4)', () => {
+  describe('disabled inheritance from Field', () => {
     it('Field disabled=true disables InputText even when InputText does not pass disabled', () => {
       const { container } = renderField({ disabled: true });
       expect(container.querySelector('input')).toBeDisabled();

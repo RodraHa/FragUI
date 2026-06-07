@@ -51,7 +51,7 @@ export interface FieldGroupProps {
   defaultCollapsed?: boolean;
   /**
    * Disables all descendant `Field` components via `FieldGroupContext`.
-   * Inheritable from `Form` in the Form sprint (§2.4: ancestor always wins).
+   * Inheritable from `Form` (ancestor always wins).
    * @default false
    */
   disabled?: boolean;
@@ -73,7 +73,7 @@ export interface FieldGroupProps {
  * - Controlled: pass `collapsed` + `onCollapsedChange`.
  * - Uncontrolled: pass `defaultCollapsed` (defaults to false = expanded).
  *
- * Accessibility contract (§4):
+ * Accessibility contract:
  * - Collapse trigger is always a real `<button>`.
  * - `aria-expanded` and `aria-controls` are set on the trigger.
  * - Collapsed content uses the `hidden` attribute to remove it from the
@@ -92,7 +92,7 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
   onCollapsedChange,
   children,
 }) => {
-  // ── FormContext + parent FieldGroupContext disabled cascade (§2.4) ──
+  // ── FormContext + parent FieldGroupContext disabled cascade ──
   const formCtx = useFormContext();
   const parentGroupCtx = useFieldGroupContext();
   const effectiveDisabled =
@@ -141,7 +141,7 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
       {title != null && (
         <legend style={legendResetStyle}>
           {collapsible ? (
-            /* Collapsible trigger — must be a real <button> (§4 contract) */
+            /* Collapsible trigger — must be a real <button> (accessibility contract) */
             <button
               type="button"
               aria-expanded={!isCollapsed}
@@ -182,11 +182,14 @@ export const FieldGroup: React.FC<FieldGroupProps> = ({
       {hasHeader && <div style={getHeaderStyle(true)} aria-hidden="true" />}
 
       {/* Content grid — hidden attribute removes from tab order when
-          collapsed, satisfying the accessibility contract (§4). */}
+          collapsed, satisfying the accessibility contract. */}
+      {/* The accessible name of the group comes from the <fieldset>/<legend>
+          wrapper, so this content div needs no aria-labelledby of its own.
+          It carries role="group", the id targeted by the collapse trigger's
+          aria-controls, and the grid layout. */}
       <div
         id={contentId}
         role="group"
-        aria-labelledby={title != null ? undefined : undefined}
         hidden={isCollapsed || undefined}
         style={isCollapsed ? undefined : getContentGridStyle(columns, gap)}
       >
