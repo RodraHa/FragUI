@@ -1,13 +1,30 @@
 {
   "name": "fragui",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "description": "FragUI — React component library",
+  "author": "Emilio",
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "form"
+  ],
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "node -e \"require('fs').rmSync('./dist',{recursive:true,force:true})\" && tsup",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\"",
@@ -20,6 +37,11 @@
     "build-storybook": "storybook build",
     "server": "json-server db.json -p 4000"
   },
+  "peerDependencies": {
+    "@floating-ui/react": ">=0.27.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
       "eslint --fix",
@@ -29,19 +51,10 @@
       "prettier --write"
     ]
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@floating-ui/react": "^0.27.19",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
-  },
   "devDependencies": {
-    "json-server": "^1.0.0-beta.15",
     "@chromatic-com/storybook": "^5.1.2",
     "@eslint/js": "^9.39.4",
+    "@floating-ui/react": "^0.27.19",
     "@storybook/addon-a11y": "^10.3.3",
     "@storybook/addon-docs": "^10.3.3",
     "@storybook/addon-vitest": "^10.3.3",
@@ -62,12 +75,19 @@
     "eslint-plugin-storybook": "^10.3.3",
     "husky": "^9.1.7",
     "jsdom": "^29.0.1",
+    "json-server": "^1.0.0-beta.15",
     "lint-staged": "^16.4.0",
     "playwright": "^1.59.1",
     "prettier": "^3.8.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "storybook": "^10.3.3",
+    "tsup": "^8.5.1",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.0",
     "vitest": "^4.1.2"
+  },
+  "dependencies": {
+    "fragui": "file:fragui-0.1.0.tgz"
   }
 }
